@@ -34,8 +34,6 @@ public class CkanHarvester {
     private RestTemplate rest;
     private List<String> ignoredKeys;
     private RDFHandler handler;
-    private String provenancePrefix = "http://data.opendatasupport.eu/ontology/harmonisation.owl#";
-    private URI harvestDatePredicate = valueFactory.createURI(provenancePrefix + "harvest_date");
     private boolean enableProvenance = true;
     private String catalogOwner = "";
     private List<String> warnings = new ArrayList<String>();
@@ -58,7 +56,7 @@ public class CkanHarvester {
 
     private void addCatalogProvenance() throws RDFHandlerException, DatatypeConfigurationException {
         URI source = valueFactory.createURI(baseUri);
-        handler.handleStatement(new StatementImpl(source, harvestDatePredicate, valueFactory.createLiteral(getXMLNow())));
+        handler.handleStatement(new StatementImpl(source, ODSVoc.ODS_HARVEST_DATE, valueFactory.createLiteral(getXMLNow())));
         handler.handleStatement(new StatementImpl(source, ODSVoc.RDFTYPE, ODSVoc.DCAT_CATALOG));
 
         if (!catalogOwner.isEmpty())
@@ -76,7 +74,7 @@ public class CkanHarvester {
         URI dataset = valueFactory.createURI(subjectPrefix + datasetId);
         handler.handleStatement(new StatementImpl(source, ODSVoc.DCAT_CAT_PROP_DATASET, valueFactory.createURI(subjectPrefix + datasetId)));
         handler.handleStatement(new StatementImpl(dataset, ODSVoc.RDFTYPE, ODSVoc.DCAT_DATASET));
-        handler.handleStatement(new StatementImpl(dataset, harvestDatePredicate, valueFactory.createLiteral(getXMLNow())));
+        handler.handleStatement(new StatementImpl(dataset, ODSVoc.ODS_HARVEST_DATE, valueFactory.createLiteral(getXMLNow())));
     }
 
     public void harvest() throws RDFHandlerException, ExtractException, DatatypeConfigurationException {
