@@ -1,0 +1,10 @@
+@prefix dcat:	<http://www.w3.org/ns/dcat#> .
+@prefix dataset:	<http://data.opendatasupport.eu/id/catalog/germany/dataset/> .
+dataset:destatis-dataset-51000-0031	dcat:theme	"society" ,
+		"economy" ,
+		"infrastruktur_bauen_wohnen" ,
+		"bevoelkerung" ,
+		"wirtschaft_arbeit" .
+dataset:example2	dcat:theme	"infrastruktur_bauen_wohnen".
+dataset:example3	dcat:theme	"bevoelkerung".
+dataset:example4	dcat:theme	"society".
