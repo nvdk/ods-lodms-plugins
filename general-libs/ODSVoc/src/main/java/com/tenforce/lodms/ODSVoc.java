@@ -21,4 +21,9 @@ public interface ODSVoc {
     URI DCT_TITLE = valueFactory.createURI(DC_TERMS + "title");
     URI DCT_LICENSE = valueFactory.createURI(DC_TERMS + "license");
     URI ADMS_STATUS = valueFactory.createURI("http://www.w3.org/ns/adms#status");
+    URI ODS_NS = valueFactory.createURI("http://data.opendatasupport.eu/ontology/harmonisation.owl#");
+    URI ODS_RAW_CATALOG = valueFactory.createURI(ODS_NS + "raw_catalog");
+    URI ODS_RAW_DATASET = valueFactory.createURI(ODS_NS + "raw_dataset");
+    URI ODS_HARVEST_DATE = valueFactory.createURI(ODS_NS + "harvest_date");
+
 }
