@@ -1,3 +1,5 @@
+package com.tenforce.extractors;
+
 public class RDFExtractorConfig {
     private String rdfLocation;
 

@@ -1,3 +1,5 @@
+package com.tenforce.lodms.extractors;
+
 public class VirtuosoExtractorConfig {
   private String host = "localhost";
   private String port = "1111";
