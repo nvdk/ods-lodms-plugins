@@ -3,7 +3,7 @@ ods-lodms-plugins
 
 This repository contains the plugins that were created in the course of the Open Data Support Project to extend the the Linked Open Data Manager Suite into the Open Data Interopability platform. 
 
-Plugins are available as jars for inclusion in your project. They are split up into three packages according to the pipeline stage. 
+Plugins are available as maven projects for inclusion in your project. They are split up into three packages according to the pipeline stage. 
 
 lodms-ods-extractors 
 -------------------
