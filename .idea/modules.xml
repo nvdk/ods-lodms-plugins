@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/lodms-ods-extractors/ckan-extractor/ckan-extractor.iml" filepath="$PROJECT_DIR$/lodms-ods-extractors/ckan-extractor/ckan-extractor.iml" />
+      <module fileurl="file://$PROJECT_DIR$/lodms-ods-transformers/dcat-valuemapper/dcat-valuemapper.iml" filepath="$PROJECT_DIR$/lodms-ods-transformers/dcat-valuemapper/dcat-valuemapper.iml" />
+      <module fileurl="file://$PROJECT_DIR$/lodms-ods-transformers/multiple-sparql-updater/multiple-sparql-updater.iml" filepath="$PROJECT_DIR$/lodms-ods-transformers/multiple-sparql-updater/multiple-sparql-updater.iml" />
+      <module fileurl="file://$PROJECT_DIR$/lodms-ods-transformers/ods-cleaner/ods-cleaner.iml" filepath="$PROJECT_DIR$/lodms-ods-transformers/ods-cleaner/ods-cleaner.iml" />
+      <module fileurl="file://$PROJECT_DIR$/lodms-ods-transformers/ods-dcat-harmonizer/ods-dcat-harmonizer.iml" filepath="$PROJECT_DIR$/lodms-ods-transformers/ods-dcat-harmonizer/ods-dcat-harmonizer.iml" />
+      <module fileurl="file://$PROJECT_DIR$/lodms-ods-transformers/ods-modification-detector/ods-modification-detector.iml" filepath="$PROJECT_DIR$/lodms-ods-transformers/ods-modification-detector/ods-modification-detector.iml" />
+      <module fileurl="file://$PROJECT_DIR$/general-libs/ODSVoc/ods-vocabulary.iml" filepath="$PROJECT_DIR$/general-libs/ODSVoc/ods-vocabulary.iml" />
+      <module fileurl="file://$PROJECT_DIR$/lodms-ods-extractors/rdf-extractor/rdf-extractor.iml" filepath="$PROJECT_DIR$/lodms-ods-extractors/rdf-extractor/rdf-extractor.iml" />
+      <module fileurl="file://$PROJECT_DIR$/lodms-ods-extractors/virtuoso-extractor/virtuoso-extractor.iml" filepath="$PROJECT_DIR$/lodms-ods-extractors/virtuoso-extractor/virtuoso-extractor.iml" />
+      <module fileurl="file://$PROJECT_DIR$/lodms-ods-loaders/virtuoso-loader/virtuoso-loader.iml" filepath="$PROJECT_DIR$/lodms-ods-loaders/virtuoso-loader/virtuoso-loader.iml" />
+    </modules>
+  </component>
+</project>
+

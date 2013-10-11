@@ -3,11 +3,20 @@
   <component name="EntryPointsManager">
     <entry_points version="2.0" />
   </component>
-  <component name="IdProvider" IDEtalkID="9BE0C8BDEC1E229E6DC421B0E1B371C6" />
+  <component name="IdProvider" IDEtalkID="ADDD7D25B7110EF7ABE27EA1772CCD3E" />
   <component name="MavenProjectsManager">
     <option name="originalFiles">
       <list>
-        <option value="$PROJECT_DIR$/ODSVoc/pom.xml" />
+        <option value="$PROJECT_DIR$/lodms-ods-extractors/ckan-extractor/pom.xml" />
+        <option value="$PROJECT_DIR$/lodms-ods-extractors/rdf-extractor/pom.xml" />
+        <option value="$PROJECT_DIR$/lodms-ods-extractors/virtuoso-extractor/pom.xml" />
+        <option value="$PROJECT_DIR$/general-libs/ODSVoc/pom.xml" />
+        <option value="$PROJECT_DIR$/lodms-ods-transformers/dcat-valuemapper/pom.xml" />
+        <option value="$PROJECT_DIR$/lodms-ods-transformers/multiple-sparql-updater/pom.xml" />
+        <option value="$PROJECT_DIR$/lodms-ods-transformers/ods-cleaner/pom.xml" />
+        <option value="$PROJECT_DIR$/lodms-ods-transformers/ods-dcat-harmonizer/pom.xml" />
+        <option value="$PROJECT_DIR$/lodms-ods-transformers/ods-modification-detector/pom.xml" />
+        <option value="$PROJECT_DIR$/lodms-ods-loaders/virtuoso-loader/pom.xml" />
       </list>
     </option>
   </component>

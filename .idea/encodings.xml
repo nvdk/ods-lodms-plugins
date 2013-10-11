@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Encoding" useUTFGuessing="true" native2AsciiForPropertiesFiles="false">
+    <file url="file://$PROJECT_DIR$/lodms-ods-extractors/ckan-extractor" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/lodms-ods-extractors/rdf-extractor" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/lodms-ods-extractors/virtuoso-extractor" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/lodms-ods-loaders/virtuoso-loader" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/lodms-ods-loaders/virtuoso-loader/src/main/java/com/tenforce/lodms/loaders/VirtuosoLoader.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/lodms-ods-loaders/virtuoso-loader/src/main/java/com/tenforce/lodms/loaders/VirtuosoLoaderConfig.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/lodms-ods-loaders/virtuoso-loader/src/main/java/com/tenforce/lodms/loaders/VirtuosoLoaderConfigDialog.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/lodms-ods-transformers/dcat-valuemapper" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/lodms-ods-transformers/dcat-valuemapper/src/main/java/com/tenforce/lodms/transformers/MappedPredicate.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/lodms-ods-transformers/dcat-valuemapper/src/main/java/com/tenforce/lodms/transformers/Mapping.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/lodms-ods-transformers/dcat-valuemapper/src/main/java/com/tenforce/lodms/transformers/ODSValueMapper.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/lodms-ods-transformers/dcat-valuemapper/src/main/java/com/tenforce/lodms/transformers/ODSValueMapperConfig.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/lodms-ods-transformers/dcat-valuemapper/src/main/java/com/tenforce/lodms/transformers/ODSValueMapperDialog.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/lodms-ods-transformers/dcat-valuemapper/src/main/java/com/tenforce/lodms/transformers/PredicateSelector.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/lodms-ods-transformers/dcat-valuemapper/src/main/java/com/tenforce/lodms/transformers/ValueLoader.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/lodms-ods-transformers/dcat-valuemapper/src/main/java/com/tenforce/lodms/transformers/ValueLoaderDialog.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/lodms-ods-transformers/dcat-valuemapper/src/main/resources/META-INF/services/at.punkt.lodms.spi.transform.Transformer" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/lodms-ods-transformers/multiple-sparql-updater" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/lodms-ods-transformers/ods-cleaner" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/lodms-ods-transformers/ods-dcat-harmonizer" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/lodms-ods-transformers/ods-dcat-harmonizer/src/main/java/com/tenforce/lodms/transformers/ODSDCatGenerator.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/lodms-ods-transformers/ods-modification-detector" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/lodms-ods-transformers/ods-modification-detector/src/main/java/com/tenforce/lodms/transformers/ODSModificationDetector.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/lodms-ods-transformers/ods-modification-detector/src/main/java/com/tenforce/lodms/transformers/ODSModificationDetectorConfig.java" charset="UTF-8" />
+  </component>
+</project>
+
