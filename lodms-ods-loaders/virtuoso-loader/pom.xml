@@ -8,7 +8,7 @@
     <artifactId>virtuoso-loader</artifactId>
     <version>1.0</version>
     <properties>
-        <lodms.version>1.0.0</lodms.version>
+        <lodms.version>1.0.1s</lodms.version>
         <sesame.version>2.6.10</sesame.version>
     </properties>
 

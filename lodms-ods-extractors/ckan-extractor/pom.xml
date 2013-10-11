@@ -11,7 +11,7 @@
     <version>1.0.0</version>
 
     <properties>
-        <lodms.version>1.0.0</lodms.version>
+        <lodms.version>1.0.1</lodms.version>
         <jackson.version>1.7.1</jackson.version>
         <sesame.version>2.6.10</sesame.version>
         <spring.version>3.1.2.RELEASE</spring.version>

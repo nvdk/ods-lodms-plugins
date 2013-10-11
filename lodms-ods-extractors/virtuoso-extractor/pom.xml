@@ -4,12 +4,12 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>virtuoso-extractor</groupId>
+    <groupId>com.tenforce.lodms</groupId>
     <artifactId>virtuoso-extractor</artifactId>
     <version>1.0</version>
 
     <properties>
-        <lodms.version>1.0.0</lodms.version>
+        <lodms.version>1.0.1</lodms.version>
         <sesame.version>2.6.10</sesame.version>
     </properties>
 
