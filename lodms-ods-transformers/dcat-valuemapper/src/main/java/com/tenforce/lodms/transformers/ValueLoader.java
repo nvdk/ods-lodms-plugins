@@ -1,6 +1,6 @@
 package com.tenforce.lodms.transformers;
 
-import info.aduna.iteration.Iterations;
+import com.tenforce.lodms.ODSVoc;
 import org.openrdf.model.Resource;
 import org.openrdf.model.URI;
 import org.openrdf.query.QueryLanguage;
@@ -9,7 +9,6 @@ import org.openrdf.query.TupleQueryResult;
 import org.openrdf.repository.Repository;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
-import org.openrdf.repository.RepositoryResult;
 import virtuoso.sesame2.driver.VirtuosoRepository;
 
 import java.util.ArrayList;
@@ -29,6 +28,9 @@ public class ValueLoader {
         }
     }
 
+    public ValueLoader(Repository repository) {
+        this.repository = repository;
+    }
     public List<String> getValuesFor(URI context, URI predicate) throws RepositoryException {
         RepositoryConnection con = repository.getConnection();
         List<String> values = new ArrayList<String>();
@@ -49,8 +51,13 @@ public class ValueLoader {
             RepositoryConnection con = repository.getConnection();
             List<Resource> graphList = Collections.emptyList();
             try {
-                RepositoryResult<Resource> graphs = con.getContextIDs();
-                graphList = Iterations.asList(graphs);
+                TupleQuery query = con.prepareTupleQuery(QueryLanguage.SPARQL,"SELECT distinct ?g WHERE {GRAPH ?g {?g a ?catalog}}");
+                query.setBinding("catalog", ODSVoc.DCAT_CATALOG);
+                graphList = new ArrayList<Resource>();
+                TupleQueryResult graphs = query.evaluate();
+                while (graphs.hasNext()) {
+                    graphList.add((Resource) graphs.next().getBinding("g").getValue());
+                }
                 graphs.close();
             }
             finally {

@@ -49,17 +49,18 @@ public class ODSValueMapperTest {
         RepositoryConnection con = repository.getConnection();
         try {
             loadRDFInStore("example_themes.n3", con);
-            List<Statement> statements = Iterations.asList(con.getStatements(null, null, null, false, DEFAULT_GRAPH));
+            List<Statement> statements = Iterations.asList(con.getStatements(null, new URIImpl("http://www.w3.org/ns/dcat#theme"), null, false, DEFAULT_GRAPH));
             ODSValueMapper mapper = new ODSValueMapper();
             ODSValueMapperConfig config = new ODSValueMapperConfig();
             config.setMappings(getMappingList());
+            config.setMappedPredicate(new MappedPredicate(MappedPredicate.DATASET, "http://www.w3.org/ns/dcat#theme", "theme"));
             mapper.configure(config);
             mapper.transform(repository, DEFAULT_GRAPH, new TransformContext("myid", new HashMap<String, Object>()));
             for (Statement s : statements) {
-                Assert.assertFalse(con.hasStatement(s, false, DEFAULT_GRAPH));
+                Assert.assertFalse("should not have statement with " + s.getSubject().stringValue(),con.hasStatement(s, false, DEFAULT_GRAPH));
             }
         } catch (Exception e) {
-            System.out.println(e.getStackTrace());
+            System.out.println(e.getMessage());
             Assert.fail(e.getMessage());
         } finally {
             con.close();
@@ -74,10 +75,10 @@ public class ODSValueMapperTest {
         RepositoryConnection con = repository.getConnection();
         try {
             loadRDFInStore("example_themes.n3", con);
-            List<Statement> statements = Iterations.asList(con.getStatements(null, null, null, false, DEFAULT_GRAPH));
+            List<Statement> statements = Iterations.asList(con.getStatements(null, new URIImpl("http://www.w3.org/ns/dcat#theme"), null, false, DEFAULT_GRAPH));
             ODSValueMapper mapper = new ODSValueMapper();
             ODSValueMapperConfig config = new ODSValueMapperConfig();
-            config.setMappedPredicate(new MappedPredicate(MappedPredicate.DATASET,"http://www.w3.org/ns/dcat#theme","bleh"));
+            config.setMappedPredicate(new MappedPredicate(MappedPredicate.DATASET,"http://www.w3.org/ns/dcat#theme","theme"));
             config.setMappings(getMappingList());
             mapper.configure(config);
             mapper.transform(repository, DEFAULT_GRAPH, new TransformContext("myid", new HashMap<String, Object>()));

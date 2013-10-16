@@ -6,7 +6,7 @@
 
     <groupId>com.tenforce.lodms</groupId>
     <artifactId>dcat-valuemapper</artifactId>
-    <version>1.0</version>
+    <version>1.0.1</version>
 
     <properties>
         <lodms.version>1.0.1</lodms.version>
@@ -18,6 +18,11 @@
             <groupId>org.openrdf.sesame</groupId>
             <artifactId>sesame-model</artifactId>
             <version>${sesame.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.tenforce.lodms</groupId>
+            <artifactId>ods-vocabulary</artifactId>
+            <version>1.0</version>
         </dependency>
         <dependency>
             <groupId>at.punkt.lodms</groupId>
@@ -43,6 +48,12 @@
         <dependency>
             <groupId>org.openrdf.sesame</groupId>
             <artifactId>sesame-sail-memory</artifactId>
+            <version>${sesame.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.openrdf.sesame</groupId>
+            <artifactId>sesame-queryparser-sparql</artifactId>
             <version>${sesame.version}</version>
             <scope>test</scope>
         </dependency>

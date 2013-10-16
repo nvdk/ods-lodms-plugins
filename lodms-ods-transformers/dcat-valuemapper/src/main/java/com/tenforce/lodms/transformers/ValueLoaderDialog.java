@@ -9,6 +9,7 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import org.openrdf.model.Resource;
 import org.openrdf.model.URI;
+import org.openrdf.model.impl.URIImpl;
 import org.openrdf.repository.RepositoryException;
 
 public class ValueLoaderDialog extends VerticalLayout {
@@ -62,9 +63,11 @@ public class ValueLoaderDialog extends VerticalLayout {
             public void buttonClick(Button.ClickEvent event) {
                 try {
                     ValueLoader loader = new ValueLoader(getHost(), getPort(), getUsername(), getPassword());
+                    graph.addItem(new URIImpl("http://wukido"));
                     for (Resource context : loader.getAvailableGraph()) {
                         graph.addItem(context);
                     }
+                    loadGraphs.setComponentError(null);
                 } catch (IllegalArgumentException e) {
                     loadGraphs.setComponentError(new UserError(e.getMessage()));
                 }
