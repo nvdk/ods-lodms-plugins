@@ -3,6 +3,9 @@ package com.tenforce.lodms.transformers;
 import com.tenforce.lodms.ODSVoc;
 import org.openrdf.model.Resource;
 import org.openrdf.model.URI;
+import org.openrdf.model.impl.URIImpl;
+import org.openrdf.query.MalformedQueryException;
+import org.openrdf.query.QueryEvaluationException;
 import org.openrdf.query.QueryLanguage;
 import org.openrdf.query.TupleQuery;
 import org.openrdf.query.TupleQueryResult;
@@ -23,6 +26,7 @@ public class ValueLoader {
         repository = new VirtuosoRepository(connectionString, user, pwd, true);
         try {
             RepositoryConnection con = repository.getConnection();
+            con.close();
         } catch (RepositoryException e) {
             throw new IllegalArgumentException(e.getMessage(),e);
         }
@@ -46,28 +50,31 @@ public class ValueLoader {
             return values;
         }
     }
-    public List<Resource> getAvailableGraph() {
+    public List<Resource> getAvailableGraph() throws RepositoryException {
+        List<Resource> graphList = Collections.emptyList();
+        RepositoryConnection con = repository.getConnection();
         try {
-            RepositoryConnection con = repository.getConnection();
-            List<Resource> graphList = Collections.emptyList();
+            String queryString = "SELECT distinct ?g WHERE {GRAPH ?g {?g a ?catalog}}";
+            TupleQuery tupleQuery = con.prepareTupleQuery(QueryLanguage.SPARQL, queryString);
+            tupleQuery.setBinding("catalog", ODSVoc.DCAT_CATALOG);
+            TupleQueryResult graphs = tupleQuery.evaluate();
             try {
-                TupleQuery query = con.prepareTupleQuery(QueryLanguage.SPARQL,"SELECT distinct ?g WHERE {GRAPH ?g {?g a ?catalog}}");
-                query.setBinding("catalog", ODSVoc.DCAT_CATALOG);
                 graphList = new ArrayList<Resource>();
-                TupleQueryResult graphs = query.evaluate();
                 while (graphs.hasNext()) {
-                    graphList.add((Resource) graphs.next().getBinding("g").getValue());
+                    URI graph = new URIImpl(graphs.next().getBinding("g").getValue().stringValue());
+                    graphList.add(graph);
                 }
-                graphs.close();
             }
             finally {
-                con.close();
-                return graphList;
+                graphs.close();
             }
-        } catch (RepositoryException e) {
-            return Collections.emptyList();
+        } catch (QueryEvaluationException e) {
+            e.printStackTrace();
+        } catch (MalformedQueryException e) {
+            e.printStackTrace();
+        } finally {
+            con.close();
         }
-
-
+       return graphList;
     }
 }

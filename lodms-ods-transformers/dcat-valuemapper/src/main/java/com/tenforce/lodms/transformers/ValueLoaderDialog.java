@@ -1,6 +1,7 @@
 package com.tenforce.lodms.transformers;
 
 import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.terminal.SystemError;
 import com.vaadin.terminal.UserError;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
@@ -70,6 +71,8 @@ public class ValueLoaderDialog extends VerticalLayout {
                     loadGraphs.setComponentError(null);
                 } catch (IllegalArgumentException e) {
                     loadGraphs.setComponentError(new UserError(e.getMessage()));
+                } catch (RepositoryException e) {
+                    loadGraphs.setComponentError(new SystemError(e.getMessage()));
                 }
             }
         }
