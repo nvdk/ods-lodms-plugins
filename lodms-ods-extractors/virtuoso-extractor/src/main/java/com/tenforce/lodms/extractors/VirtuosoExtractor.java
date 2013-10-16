@@ -31,7 +31,7 @@ public class VirtuosoExtractor extends ConfigurableBase<VirtuosoExtractorConfig>
         context.getCustomData().put("virtuosoExtractorGraph", graph);
         try {
             RepositoryConnection virtuosoConnection = repository.getConnection();
-            if (!virtuosoConnection.hasStatement(null,null,null,false,graph)) {
+            if (!virtuosoConnection.hasStatement(null, null, null, false, graph)) {
                 context.cancelPipeline("no statements in specified graph:" + graph.stringValue());
                 throw new ExtractException("no statements specified in graph");
             }
@@ -57,7 +57,7 @@ public class VirtuosoExtractor extends ConfigurableBase<VirtuosoExtractorConfig>
 
     @Override
     public Resource getIcon(Application application) {
-        return new ClassResource("/com/tenforce/lodms/virtuoso/virt.png", application);
+        return new ClassResource("/virt.png", application);
     }
 
     @Override
