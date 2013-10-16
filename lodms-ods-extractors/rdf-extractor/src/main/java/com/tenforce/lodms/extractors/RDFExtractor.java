@@ -1,4 +1,4 @@
-package com.tenforce.extractors;
+package com.tenforce.lodms.extractors;
 
 import at.punkt.lodms.integration.ConfigBeanProvider;
 import at.punkt.lodms.integration.ConfigurableBase;
