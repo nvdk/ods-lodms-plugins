@@ -79,7 +79,7 @@ public class CkanExtractor extends ConfigurableBase<CkanExtractorConfig> impleme
 
     @Override
     public Resource getIcon(Application application) {
-        return new ClassResource("/com/tenforce/lodms/ckan/ckan.png", application);
+        return new ClassResource("/ckan.png", application);
     }
 
     @Override

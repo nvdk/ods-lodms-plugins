@@ -101,7 +101,7 @@ public class VirtuosoLoader extends ConfigurableBase<VirtuosoLoaderConfig> imple
 
     @Override
     public Resource getIcon(Application application) {
-        return new ClassResource("/com/tenforce/lodms/virtuoso/virt.png", application);
+        return new ClassResource("/virt.png", application);
     }
 
     @Override

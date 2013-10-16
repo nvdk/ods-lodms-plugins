@@ -61,7 +61,7 @@ public class RDFExtractor extends ConfigurableBase<RDFExtractorConfig> implement
 
     @Override
     public Resource getIcon(Application application) {
-        return new ClassResource("/at/punkt/lodms/impl/load/rdffile.gif", application);
+        return new ClassResource("/rdffile.gif", application);
     }
 
     @Override

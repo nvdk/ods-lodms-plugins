@@ -19,7 +19,11 @@
             <artifactId>sesame-model</artifactId>
             <version>${sesame.version}</version>
         </dependency>
-
+        <dependency>
+            <groupId>com.tenforce.lodms</groupId>
+            <artifactId>ods-resources</artifactId>
+            <version>1.0.0</version>
+        </dependency>
         <dependency>
             <groupId>org.openrdf.sesame</groupId>
             <artifactId>sesame-query</artifactId>

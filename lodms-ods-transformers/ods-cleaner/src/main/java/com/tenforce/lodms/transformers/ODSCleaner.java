@@ -60,7 +60,7 @@ public class ODSCleaner extends TransformerBase<Object> {
     @SuppressWarnings("ReturnOfNull")
     @Override
     public Resource getIcon(Application application) {
-        return new ClassResource("/com/tenforce/lodms/transform/ods.png", application);
+        return new ClassResource("/ods.png", application);
     }
 
     @Override

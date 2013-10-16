@@ -99,10 +99,10 @@ public class ODSDCatGenerator extends TransformerBase<ODSDcatGeneratorConfig> im
     private String getRawDatasetId(String dataset) {
         if (dataset.endsWith("/")) {
             System.out.println(dataset);
-            return getRawDatasetId(dataset.substring(0,dataset.length() - 1));
+            return getRawDatasetId(dataset.substring(0, dataset.length() - 1));
         }
 
-        int datasetOffset = dataset.lastIndexOf("dataset/") ;
+        int datasetOffset = dataset.lastIndexOf("dataset/");
         if (datasetOffset >= 0) {
             return dataset.substring(datasetOffset + 8);
         }
@@ -163,7 +163,7 @@ public class ODSDCatGenerator extends TransformerBase<ODSDcatGeneratorConfig> im
 
     @Override
     public Resource getIcon(Application application) {
-        return new ClassResource("/com/tenforce/lodms/transform/ods.png", application);
+        return new ClassResource("/ods.png", application);
     }
 
     @Override

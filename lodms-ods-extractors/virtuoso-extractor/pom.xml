@@ -39,6 +39,11 @@
             <artifactId>jdbc-driver</artifactId>
             <version>3.62</version>
         </dependency>
+        <dependency>
+            <groupId>com.tenforce.lodms</groupId>
+            <artifactId>ods-resources</artifactId>
+            <version>1.0.0</version>
+        </dependency>
     </dependencies>
 
     <repositories>

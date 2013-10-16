@@ -24,7 +24,11 @@
             <artifactId>sesame-queryparser-sparql</artifactId>
             <version>${sesame.version}</version>
         </dependency>
-
+        <dependency>
+            <groupId>com.tenforce.lodms</groupId>
+            <artifactId>ods-resources</artifactId>
+            <version>1.0.0</version>
+        </dependency>
     </dependencies>
 
     <repositories>

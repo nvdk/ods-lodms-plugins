@@ -17,7 +17,13 @@
         <option value="$PROJECT_DIR$/lodms-ods-transformers/ods-dcat-harmonizer/pom.xml" />
         <option value="$PROJECT_DIR$/lodms-ods-transformers/ods-modification-detector/pom.xml" />
         <option value="$PROJECT_DIR$/lodms-ods-loaders/virtuoso-loader/pom.xml" />
+        <option value="$PROJECT_DIR$/general-libs/pom.xml" />
       </list>
+    </option>
+    <option name="ignoredFiles">
+      <set>
+        <option value="$PROJECT_DIR$/general-libs/pom.xml" />
+      </set>
     </option>
   </component>
   <component name="ProjectResources">

@@ -9,7 +9,7 @@
     <version>1.0</version>
 
     <properties>
-    <lodms.version>1.0.1</lodms.version>
+        <lodms.version>1.0.1</lodms.version>
     </properties>
 
     <dependencies>
@@ -27,6 +27,11 @@
             <groupId>org.openrdf.sesame</groupId>
             <artifactId>sesame-rio-api</artifactId>
             <version>2.6.10</version>
+        </dependency>
+        <dependency>
+            <groupId>com.tenforce.lodms</groupId>
+            <artifactId>ods-resources</artifactId>
+            <version>1.0.0</version>
         </dependency>
     </dependencies>
 

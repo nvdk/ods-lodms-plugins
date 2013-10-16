@@ -161,7 +161,7 @@ public class ODSModificationDetector extends TransformerBase<ODSModificationDete
 
     @Override
     public Resource getIcon(Application application) {
-        return new ClassResource("/com/tenforce/lodms/transform/ods.png", application);
+        return new ClassResource("/ods.png", application);
     }
 
     @Override

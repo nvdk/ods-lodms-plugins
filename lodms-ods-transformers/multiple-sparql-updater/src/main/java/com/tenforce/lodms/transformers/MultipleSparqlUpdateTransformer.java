@@ -64,7 +64,7 @@ public class MultipleSparqlUpdateTransformer extends TransformerBase<MultipleSpa
     public void transform(Repository repository, URI graph, TransformContext context) throws TransformException {
         try {
             RepositoryConnection connection = repository.getConnection();
-            performUpdateQueries(config.getQueries(), connection, context.getWarnings(),graph);
+            performUpdateQueries(config.getQueries(), connection, context.getWarnings(), graph);
         } catch (RepositoryException e) {
             logger.error(e.getMessage());
             logger.error(e.getStackTrace());
@@ -75,7 +75,7 @@ public class MultipleSparqlUpdateTransformer extends TransformerBase<MultipleSpa
     private void performUpdateQueries(List<String> queries, RepositoryConnection connection, List<String> warnings, URI graph) {
         for (String q : queries) {
             try {
-                String qString = "define input:default-graph-uri <"+ graph.stringValue() +"> " + q;
+                String qString = "define input:default-graph-uri <" + graph.stringValue() + "> " + q;
                 Update updateQuery = connection.prepareUpdate(QueryLanguage.SPARQL, qString);
                 updateQuery.execute();
             } catch (RepositoryException e) {
@@ -116,7 +116,7 @@ public class MultipleSparqlUpdateTransformer extends TransformerBase<MultipleSpa
 
     @Override
     public Resource getIcon(Application application) {
-        return new ClassResource("/at/punkt/lodms/impl/component.png", application);
+        return new ClassResource("/component.png", application);
     }
 
     /**
