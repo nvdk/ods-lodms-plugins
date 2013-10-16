@@ -1,4 +1,4 @@
-package com.tenforce.lodmds.extractors;
+package com.tenforce.lodms.extractors;
 
 import com.vaadin.data.Item;
 import com.vaadin.data.validator.AbstractStringValidator;

@@ -1,4 +1,4 @@
-package com.tenforce.lodmds.extractors;
+package com.tenforce.lodms.extractors;
 
 import at.punkt.lodms.integration.ConfigDialog;
 import com.vaadin.data.Property;

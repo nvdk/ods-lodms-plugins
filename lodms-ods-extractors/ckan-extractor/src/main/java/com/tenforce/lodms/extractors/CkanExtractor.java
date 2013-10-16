@@ -1,4 +1,4 @@
-package com.tenforce.lodmds.extractors;
+package com.tenforce.lodms.extractors;
 
 import at.punkt.lodms.integration.*;
 import at.punkt.lodms.spi.extract.ExtractContext;

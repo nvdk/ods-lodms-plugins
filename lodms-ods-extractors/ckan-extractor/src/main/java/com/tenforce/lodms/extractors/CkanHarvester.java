@@ -1,4 +1,4 @@
-package com.tenforce.lodmds.extractors;
+package com.tenforce.lodms.extractors;
 
 import at.punkt.lodms.spi.extract.ExtractException;
 import com.tenforce.lodms.ODSVoc;
@@ -80,14 +80,14 @@ public class CkanHarvester {
     public void harvest() throws RDFHandlerException, ExtractException, DatatypeConfigurationException {
         List<String> datasetIds = CkanDataSetList.getPackageIds(apiUri);
         if (datasetIds.isEmpty())
-            throw  new ExtractException("no datasets found in packageList: " + apiUri);
+            throw new ExtractException("no datasets found in packageList: " + apiUri);
 
         harvest(datasetIds);
     }
 
     public void harvest(List<String> datasetIds) throws RDFHandlerException, ExtractException, DatatypeConfigurationException {
         if (datasetIds.isEmpty()) {
-            throw  new ExtractException("no datasets specified");
+            throw new ExtractException("no datasets specified");
         }
         if (enableProvenance)
             addCatalogProvenance();

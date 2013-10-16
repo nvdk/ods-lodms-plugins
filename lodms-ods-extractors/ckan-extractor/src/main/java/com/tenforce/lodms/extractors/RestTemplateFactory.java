@@ -1,4 +1,4 @@
-package com.tenforce.lodmds.extractors;
+package com.tenforce.lodms.extractors;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;

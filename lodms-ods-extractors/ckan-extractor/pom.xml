@@ -8,7 +8,7 @@
     <artifactId>ckan-extractor</artifactId>
     <name>LODMS Ckan Extractor</name>
     <url>http://www.github.com/nvdk/ods-lodms-plugins</url>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
 
     <properties>
         <lodms.version>1.0.1</lodms.version>

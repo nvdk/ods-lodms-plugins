@@ -1,4 +1,4 @@
-package com.tenforce.lodmds.extractors;
+package com.tenforce.lodms.extractors;
 
 import org.apache.log4j.Logger;
 import org.openrdf.model.Statement;
