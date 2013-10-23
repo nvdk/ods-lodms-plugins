@@ -21,9 +21,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Arrays;
 
 public class RDFExtractor extends ConfigurableBase<RDFExtractorConfig> implements Extractor, UIComponent, ConfigBeanProvider<RDFExtractorConfig> {
     String rdfLocation;
+    public static String[] validExtensions = {"rdf", "xml", "owl", "rdfs", "ttl", "n3"};
 
     public RDFExtractorConfig newDefaultConfig() {
         return new RDFExtractorConfig();
@@ -32,10 +34,15 @@ public class RDFExtractor extends ConfigurableBase<RDFExtractorConfig> implement
     @Override
     public void extract(RDFHandler handler, ExtractContext context) throws ExtractException {
         try {
+            String extension = rdfLocation.substring(rdfLocation.lastIndexOf('.') + 1);
+            if (!isValidExtension(extension)) {
+                throw new ExtractException("invalid RDF format, currently only rdf and turtle are supported");
+            }
+
             URL documentUrl = new URL(rdfLocation);
-            InputStream inputStream = documentUrl.openStream();
-            RDFParser rdfParser = Rio.createParser(RDFFormat.RDFXML);
+            RDFParser rdfParser = Rio.createParser(RDFFormat.forFileName(documentUrl.getFile()));
             rdfParser.setRDFHandler(handler);
+            InputStream inputStream = documentUrl.openStream();
             rdfParser.parse(inputStream, documentUrl.toString());
         } catch (MalformedURLException e) {
             throw new ExtractException(e.getMessage(), e);
@@ -47,6 +54,10 @@ public class RDFExtractor extends ConfigurableBase<RDFExtractorConfig> implement
             throw new ExtractException(e.getMessage(), e);
         }
 
+    }
+
+    private boolean isValidExtension(String extension) {
+        return Arrays.asList(validExtensions).contains(extension);
     }
 
     @Override
