@@ -9,11 +9,12 @@ public interface ODSVoc {
     URI RDFTYPE = valueFactory.createURI("http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
     String DCAT = "http://www.w3.org/ns/dcat";
     URI DCAT_CATALOG = valueFactory.createURI(DCAT + "#Catalog");
-    URI DCAT_CAT_PROP_DATASET = valueFactory.createURI(DCAT + "#dataset");
-    URI DCAT_CAT_PROP_RECORD = valueFactory.createURI(DCAT + "#record");
     URI DCAT_CATALOGRECORD = valueFactory.createURI(DCAT + "#CatalogRecord");
     URI DCAT_DATASET = valueFactory.createURI(DCAT + "#Dataset");
-    URI DCAT_MEDIA_TYPE = valueFactory.createURI(DCAT + "mediaType");
+    URI DCAT_DISTRIBUTION = valueFactory.createURI(DCAT + "#Distribution");
+    URI DCAT_CAT_PROP_DATASET = valueFactory.createURI(DCAT + "#dataset");
+    URI DCAT_CAT_PROP_RECORD = valueFactory.createURI(DCAT + "#record");
+    URI DCAT_MEDIA_TYPE = valueFactory.createURI(DCAT + "#mediaType");
     URI DCAT_THEME = valueFactory.createURI(DCAT + "#theme");
     URI FOAF_PRIMARYTOPIC = valueFactory.createURI("http://xmlns.com/foaf/0.1/primaryTopic");
     String DC_TERMS = "http://purl.org/dc/terms/";
