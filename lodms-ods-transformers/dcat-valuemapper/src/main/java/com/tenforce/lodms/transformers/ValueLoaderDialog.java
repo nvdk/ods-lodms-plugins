@@ -8,10 +8,12 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Select;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 import org.openrdf.model.Resource;
 import org.openrdf.model.URI;
-import org.openrdf.model.impl.URIImpl;
 import org.openrdf.repository.RepositoryException;
+
+import java.util.List;
 
 public class ValueLoaderDialog extends VerticalLayout {
     private TextField host = new TextField("host");
@@ -23,10 +25,12 @@ public class ValueLoaderDialog extends VerticalLayout {
     private Button loadValues = new Button("load values");
     private URI predicate;
     private BeanItemContainer<Mapping> mappings;
+    private ValueLoaderDialog self;
 
     public ValueLoaderDialog(BeanItemContainer<Mapping> mappings) {
         configureLayout();
         this.mappings = mappings;
+        self = this;
     }
 
     public String getHost() {
@@ -64,7 +68,6 @@ public class ValueLoaderDialog extends VerticalLayout {
             public void buttonClick(Button.ClickEvent event) {
                 try {
                     ValueLoader loader = new ValueLoader(getHost(), getPort(), getUsername(), getPassword());
-                    graph.addItem(new URIImpl("http://wukido"));
                     for (Resource context : loader.getAvailableGraph()) {
                         graph.addItem(context);
                     }
@@ -82,11 +85,17 @@ public class ValueLoaderDialog extends VerticalLayout {
             public void buttonClick(Button.ClickEvent event) {
                 ValueLoader loader = new ValueLoader(getHost(), getPort(), getUsername(), getPassword());
                 try {
-                    for (String value : loader.getValuesFor(getGraph(), getPredicate())) {
-                        Mapping mapping = new Mapping();
-                        mapping.setOriginalValue(value);
-                        mappings.addItem(mapping);
+                    List<String> values = loader.getValuesFor(getGraph(), getPredicate());
+                    if (values.isEmpty()) {
+                        getWindow().showNotification("No values found for " + getPredicate(), Window.Notification.TYPE_WARNING_MESSAGE);
+                    } else {
+                        for (String value : values) {
+                            Mapping mapping = new Mapping();
+                            mapping.setOriginalValue(value);
+                            mappings.addItem(mapping);
+                        }
                     }
+                    getWindow().removeComponent(self);
                 } catch (RepositoryException e) {
                     System.out.println("wuk");
                 }

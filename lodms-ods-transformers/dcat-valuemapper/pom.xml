@@ -6,7 +6,7 @@
 
     <groupId>com.tenforce.lodms</groupId>
     <artifactId>dcat-valuemapper</artifactId>
-    <version>1.0.2</version>
+    <version>1.0.3</version>
 
     <properties>
         <lodms.version>1.0.1</lodms.version>
@@ -32,7 +32,7 @@
         <dependency>
             <groupId>com.tenforce.lodms</groupId>
             <artifactId>ods-vocabulary</artifactId>
-            <version>1.0</version>
+            <version>1.0.3</version>
         </dependency>
         <dependency>
             <groupId>at.punkt.lodms</groupId>
@@ -82,7 +82,7 @@
         <dependency>
             <groupId>org.openrdf.sesame</groupId>
             <artifactId>sesame-queryalgebra-evaluation</artifactId>
-            <version>2.6.10</version>
+            <version>${sesame.version}</version>
         </dependency>
     </dependencies>
 

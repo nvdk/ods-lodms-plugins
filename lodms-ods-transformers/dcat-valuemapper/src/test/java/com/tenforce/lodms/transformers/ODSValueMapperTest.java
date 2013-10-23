@@ -1,6 +1,7 @@
 package com.tenforce.lodms.transformers;
 
 import at.punkt.lodms.spi.transform.TransformContext;
+import com.tenforce.lodms.ODSVoc;
 import info.aduna.iteration.Iterations;
 import org.junit.Assert;
 import org.junit.Test;
@@ -38,8 +39,6 @@ public class ODSValueMapperTest {
             put("bevoelkerung", new URIImpl("http://example/population"));
             put("wirtschaft_arbeit", new URIImpl("http://example/work"));
         }
-
-        ;
     };
 
     @Test
@@ -53,11 +52,11 @@ public class ODSValueMapperTest {
             ODSValueMapper mapper = new ODSValueMapper();
             ODSValueMapperConfig config = new ODSValueMapperConfig();
             config.setMappings(getMappingList());
-            config.setMappedPredicate(new MappedPredicate(MappedPredicate.DATASET, "http://www.w3.org/ns/dcat#theme", "theme"));
+            config.setMappedPredicate(new MappedPredicate(ODSVoc.DCAT_DATASET, "http://www.w3.org/ns/dcat#theme", "theme"));
             mapper.configure(config);
             mapper.transform(repository, DEFAULT_GRAPH, new TransformContext("myid", new HashMap<String, Object>()));
             for (Statement s : statements) {
-                Assert.assertFalse("should not have statement with " + s.getSubject().stringValue(),con.hasStatement(s, false, DEFAULT_GRAPH));
+                Assert.assertFalse("should not have statement with " + s.getSubject().stringValue(), con.hasStatement(s, false, DEFAULT_GRAPH));
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -78,12 +77,12 @@ public class ODSValueMapperTest {
             List<Statement> statements = Iterations.asList(con.getStatements(null, new URIImpl("http://www.w3.org/ns/dcat#theme"), null, false, DEFAULT_GRAPH));
             ODSValueMapper mapper = new ODSValueMapper();
             ODSValueMapperConfig config = new ODSValueMapperConfig();
-            config.setMappedPredicate(new MappedPredicate(MappedPredicate.DATASET,"http://www.w3.org/ns/dcat#theme","theme"));
+            config.setMappedPredicate(new MappedPredicate(ODSVoc.DCAT_DATASET, "http://www.w3.org/ns/dcat#theme", "theme"));
             config.setMappings(getMappingList());
             mapper.configure(config);
             mapper.transform(repository, DEFAULT_GRAPH, new TransformContext("myid", new HashMap<String, Object>()));
             for (Statement s : statements) {
-                Statement newStatement = new StatementImpl(s.getSubject(),s.getPredicate(),MAPPINGS.get(s.getObject().stringValue()));
+                Statement newStatement = new StatementImpl(s.getSubject(), s.getPredicate(), MAPPINGS.get(s.getObject().stringValue()));
                 Assert.assertTrue(con.hasStatement(newStatement, false, DEFAULT_GRAPH));
             }
         } catch (Exception e) {
@@ -109,8 +108,8 @@ public class ODSValueMapperTest {
 
     private List<Mapping> getMappingList() {
         List<Mapping> mappings = new ArrayList<Mapping>();
-        for (Map.Entry<String,URI> entry : MAPPINGS.entrySet()) {
-            mappings.add(new Mapping(entry.getKey(),entry.getValue().stringValue()));
+        for (Map.Entry<String, URI> entry : MAPPINGS.entrySet()) {
+            mappings.add(new Mapping(entry.getKey(), entry.getValue().stringValue()));
         }
         return mappings;
     }
