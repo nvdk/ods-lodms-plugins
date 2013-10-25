@@ -14,3 +14,5 @@ dataset:example3 rdf:type dcat:Dataset.
 dataset:example3	dcat:theme	"bevoelkerung".
 dataset:example4 rdf:type dcat:Dataset.
 dataset:example4	dcat:theme	"society".
+dataset:example5 rdf:type dcat:Dataset.
+dataset:example5    dcat:theme <http://uri.test>.

@@ -38,6 +38,7 @@ public class ODSValueMapperTest {
             put("infrastruktur_bauen_wohnen", new URIImpl("http://example/living"));
             put("bevoelkerung", new URIImpl("http://example/population"));
             put("wirtschaft_arbeit", new URIImpl("http://example/work"));
+            put("http://uri.test", new URIImpl("http://example/work"));
         }
     };
 

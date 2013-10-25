@@ -9,9 +9,7 @@ import at.punkt.lodms.spi.transform.TransformException;
 import com.vaadin.Application;
 import com.vaadin.terminal.ClassResource;
 import com.vaadin.terminal.Resource;
-import org.openrdf.model.Literal;
 import org.openrdf.model.URI;
-import org.openrdf.model.impl.ValueFactoryImpl;
 import org.openrdf.query.QueryLanguage;
 import org.openrdf.query.Update;
 import org.openrdf.query.UpdateExecutionException;
@@ -41,28 +39,57 @@ public class ODSValueMapper extends TransformerBase<ODSValueMapperConfig> implem
             try {
 
                 for (Mapping mapping : config.getMappings()) {
-                    Literal orgValue = ValueFactoryImpl.getInstance().createLiteral(mapping.getOriginalValue());
-                    String insertString ="WITH <"+ graph.stringValue() +"> INSERT {?s <" + config.getMappedPredicate().getDcatProp() + "> <"+ mapping.getHarmonizedValue() +">} WHERE {?s a ?klass. ?s <" + config.getMappedPredicate().getDcatProp() + ">  ?orgValue}";
-                    Update insertQuery =  con.prepareUpdate(QueryLanguage.SPARQL,insertString);
-                    insertQuery.setBinding("orgValue",orgValue);
-                    insertQuery.setBinding("klass",config.getMappedPredicate().getDcatClass());
+                    String insertString, deleteString;
+                    if (mapping.getOriginalValue().startsWith("http")) {
+                        insertString = generateURIInsertString(graph.stringValue(), mapping.getOriginalValue(), mapping.getHarmonizedValue());
+                        deleteString = generateURIDeleteString(graph.stringValue(), mapping.getOriginalValue());
+                    } else {
+                        insertString = generateInsertString(graph.stringValue(), mapping.getOriginalValue(), mapping.getHarmonizedValue());
+                        deleteString = generateDeleteString(graph.stringValue(), mapping.getOriginalValue());
+                    }
+                    Update insertQuery = con.prepareUpdate(QueryLanguage.SPARQL, insertString);
                     insertQuery.execute();
                     con.commit();
-                    String deleteString = "WITH <"+ graph.stringValue() +"> DELETE {?s <" + config.getMappedPredicate().getDcatProp() + ">  " + orgValue + "} WHERE {?s a ?klass. ?s <" + config.getMappedPredicate().getDcatProp() + ">  "+ orgValue + " }";
-                    Update deleteQuery =  con.prepareUpdate(QueryLanguage.SPARQL,deleteString);
+                    Update deleteQuery = con.prepareUpdate(QueryLanguage.SPARQL, deleteString);
                     deleteQuery.execute();
+                    con.commit();
                 }
-            }
-            catch (UpdateExecutionException e) {
+            } catch (UpdateExecutionException e) {
                 context.getWarnings().add(e.getMessage());
-            }
-            finally {
+            } finally {
                 con.close();
             }
+        } catch (Exception e) {
+            throw new TransformException(e.getMessage(), e);
         }
-        catch (Exception e) {
-            throw new TransformException(e.getMessage(),e);
-        }
+    }
+
+    private String generateURIInsertString(String graph, String originalValue, String newValue) {
+        String predicate = config.getMappedPredicate().getDcatProp().stringValue();
+        String dcatClass = config.getMappedPredicate().getDcatClass().stringValue();
+        String query = "WITH <%s> INSERT { ?s <%s> <%s> } WHERE {?s a <%s>.  {{?s <%s> \"%s\"} UNION {?s <%s> <%s>}} }";
+        return String.format(query, graph, predicate, newValue, dcatClass, predicate, originalValue, predicate, originalValue);
+    }
+
+    private String generateInsertString(String graph, String originalValue, String newValue) {
+        String predicate = config.getMappedPredicate().getDcatProp().stringValue();
+        String dcatClass = config.getMappedPredicate().getDcatClass().stringValue();
+        String query = "WITH <%s> INSERT { ?s <%s> <%s> } WHERE {?s a <%s>.  ?s <%s> \"%s\"}";
+        return String.format(query, graph, predicate, newValue, dcatClass, predicate, originalValue);
+    }
+
+    private String generateDeleteString(String graph, String originalValue) {
+        String predicate = config.getMappedPredicate().getDcatProp().stringValue();
+        String dcatClass = config.getMappedPredicate().getDcatClass().stringValue();
+        String query = "WITH <%s> DELETE { ?s <%s> \"%s\".} WHERE {?s a <%s>.}";
+        return String.format(query, graph, predicate, originalValue, dcatClass);
+    }
+
+    private String generateURIDeleteString(String graph, String originalValue) {
+        String predicate = config.getMappedPredicate().getDcatProp().stringValue();
+        String dcatClass = config.getMappedPredicate().getDcatClass().stringValue();
+        String query = "WITH <%s> DELETE { ?s <%s> \"%s\". ?s <%s> <%s>  } WHERE {?s a <%s>.}";
+        return String.format(query, graph, predicate, originalValue, predicate, originalValue, dcatClass);
     }
 
     @Override

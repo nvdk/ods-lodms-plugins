@@ -6,7 +6,7 @@
 
     <groupId>com.tenforce.lodms</groupId>
     <artifactId>dcat-valuemapper</artifactId>
-    <version>1.0.3</version>
+    <version>1.0.4</version>
 
     <properties>
         <lodms.version>1.0.1</lodms.version>
