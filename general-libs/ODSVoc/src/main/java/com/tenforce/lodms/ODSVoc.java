@@ -14,8 +14,12 @@ public interface ODSVoc {
     URI DCAT_DISTRIBUTION = valueFactory.createURI(DCAT + "#Distribution");
     URI DCAT_CAT_PROP_DATASET = valueFactory.createURI(DCAT + "#dataset");
     URI DCAT_CAT_PROP_RECORD = valueFactory.createURI(DCAT + "#record");
+    URI DCAT_DATASET_DISTRIBUTION = valueFactory.createURI(DCAT + "#distribution");
+    URI DCAT_KEYWORD = valueFactory.createURI(DCAT + "#keyword");
     URI DCAT_MEDIA_TYPE = valueFactory.createURI(DCAT + "#mediaType");
     URI DCAT_THEME = valueFactory.createURI(DCAT + "#theme");
+    URI DCAT_ACCESS_URL = valueFactory.createURI(DCAT + "#accessURL");
+    URI DCAT_THEME_TAXONOMY = valueFactory.createURI(DCAT + "#themeTaxonomy");
     URI FOAF_PRIMARYTOPIC = valueFactory.createURI("http://xmlns.com/foaf/0.1/primaryTopic");
     String DC_TERMS = "http://purl.org/dc/terms/";
     URI DCT_PUBLISHER = valueFactory.createURI(DC_TERMS + "publisher");
@@ -35,6 +39,4 @@ public interface ODSVoc {
     URI ODS_RAW_CATALOG = valueFactory.createURI(ODS_NS + "raw_catalog");
     URI ODS_RAW_DATASET = valueFactory.createURI(ODS_NS + "raw_dataset");
     URI ODS_HARVEST_DATE = valueFactory.createURI(ODS_NS + "harvest_date");
-
-
 }
