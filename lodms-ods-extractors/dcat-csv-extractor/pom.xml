@@ -38,27 +38,6 @@
             <artifactId>ods-vocabulary</artifactId>
             <version>1.0.3</version>
         </dependency>
-        <dependency>
-            <groupId>org.openrdf.sesame</groupId>
-            <artifactId>sesame-repository-sail</artifactId>
-            <version>${sesame.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.openrdf.sesame</groupId>
-            <artifactId>sesame-repository-api</artifactId>
-            <version>${sesame.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.openrdf.sesame</groupId>
-            <artifactId>sesame-sail-memory</artifactId>
-            <version>${sesame.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.openrdf.sesame</groupId>
-            <artifactId>sesame-queryparser-sparql</artifactId>
-            <version>${sesame.version}</version>
-        </dependency>
-
     </dependencies>
 
     <repositories>

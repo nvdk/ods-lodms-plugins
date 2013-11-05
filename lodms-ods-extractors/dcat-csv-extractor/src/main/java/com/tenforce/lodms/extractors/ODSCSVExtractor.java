@@ -15,14 +15,7 @@ import org.deri.any23.extractor.ExtractionParameters;
 import org.deri.any23.extractor.ExtractionResult;
 import org.deri.any23.extractor.ExtractionResultImpl;
 import org.openrdf.model.impl.URIImpl;
-import org.openrdf.repository.Repository;
-import org.openrdf.repository.RepositoryConnection;
-import org.openrdf.repository.sail.SailRepository;
-import org.openrdf.repository.util.RDFInserter;
 import org.openrdf.rio.RDFHandler;
-import org.openrdf.sail.memory.MemoryStore;
-import org.openrdf.model.Statement;
-
 
 import java.io.BufferedInputStream;
 import java.io.InputStream;
@@ -42,20 +35,11 @@ public class ODSCSVExtractor extends ConfigurableBase<ODSCSVExtractorConfig> imp
     @Override
     public void extract(RDFHandler rdfHandler, ExtractContext extractContext) throws ExtractException {
         try {
-            Repository repository = new SailRepository(new MemoryStore());
-            repository.initialize();
-            RepositoryConnection con = repository.getConnection();
-            RDFInserter inserter = new RDFInserter(con);
-            inserter.enforceContext(new URIImpl("http://catalog"));
-            extractCSVData(inserter, new URL(config.getCatalogCsv()));
-            extractCSVData(inserter, new URL(config.getDatasetCsv()));
-            extractCSVData(inserter, new URL(config.getRecordCsv()));
-            extractCSVData(inserter, new URL(config.getDistributionCsv()));
-            for (Statement s : con.getStatements(null, null, null, false).asList()) {
-                rdfHandler.handleStatement(s);
-            }
-            con.close();
-            repository.shutDown();
+            extractCSVData(rdfHandler, new URL(config.getCatalogCsv()));
+            extractCSVData(rdfHandler, new URL(config.getDatasetCsv()));
+            extractCSVData(rdfHandler, new URL(config.getRecordCsv()));
+            extractCSVData(rdfHandler, new URL(config.getDistributionCsv()));
+            extractCSVData(rdfHandler, new URL(config.getAgentCsv()));
         } catch (Exception e) {
             throw new ExtractException(e.getMessage(), e);
         }
@@ -85,7 +69,7 @@ public class ODSCSVExtractor extends ConfigurableBase<ODSCSVExtractorConfig> imp
         try {
             ExtendedCSVExtractor csvExtractor = new ExtendedCSVExtractor();
             ExtractionParameters params = new ExtractionParameters(ExtractionParameters.ValidationMode.None);
-            ExtractionContext ctx = new ExtractionContext("CSV", new URIImpl(config.getBaseUri()));
+            ExtractionContext ctx = new ExtractionContext("CSV", new URIImpl("http://data.opendatasupport.eu/csv/"));
             ExtractionResult out = new ExtractionResultImpl(ctx, csvExtractor, new TripleHandlerBridge(handler));
             InputStream in = new BufferedInputStream(csvURL.openStream());
             try {

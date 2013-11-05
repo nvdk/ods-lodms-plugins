@@ -20,7 +20,12 @@ public interface ODSVoc {
     URI DCAT_THEME = valueFactory.createURI(DCAT + "#theme");
     URI DCAT_ACCESS_URL = valueFactory.createURI(DCAT + "#accessURL");
     URI DCAT_THEME_TAXONOMY = valueFactory.createURI(DCAT + "#themeTaxonomy");
-    URI FOAF_PRIMARYTOPIC = valueFactory.createURI("http://xmlns.com/foaf/0.1/primaryTopic");
+    URI DCAT_LANDING_PAGE = valueFactory.createURI(DCAT + "#landingPage");
+    URI DCAT_BYTE_SIZE = valueFactory.createURI(DCAT + "#byteSize");
+    URI DCAT_DOWNLOAD_URL = valueFactory.createURI(DCAT + "#downloadURL");
+    String FOAF = "http://xmlns.com/foaf/0.1/";
+    URI FOAF_PRIMARYTOPIC = valueFactory.createURI(FOAF + "/primaryTopic");
+    URI FOAF_HOMEPAGE = valueFactory.createURI(FOAF + "homepage");
     String DC_TERMS = "http://purl.org/dc/terms/";
     URI DCT_PUBLISHER = valueFactory.createURI(DC_TERMS + "publisher");
     URI DCT_MODIFIED = valueFactory.createURI(DC_TERMS + "modified");
@@ -32,11 +37,19 @@ public interface ODSVoc {
     URI DCT_LANGUAGE = valueFactory.createURI(DC_TERMS + "language");
     URI DCT_ACCRUAL_PERIODICTY = valueFactory.createURI(DC_TERMS + "accrualPeriodicity");
     URI DCT_TYPE = valueFactory.createURI(DC_TERMS + "type");
+    URI DCT_ISSUED = valueFactory.createURI(DC_TERMS + "issued");
+    URI DCT_RIGHTS = valueFactory.createURI(DC_TERMS + "rights");
+    URI DCT_CONFORMS_TO = valueFactory.createURI(DC_TERMS + "conformsTo");
+    URI DCT_IDENTIFIER = valueFactory.createURI(DC_TERMS + "identifier");
+    URI DCT_TEMPORAL = valueFactory.createURI(DC_TERMS + "temporal");
     String ADMS_NS = "http://www.w3.org/ns/adms#";
     URI ADMS_STATUS = valueFactory.createURI(ADMS_NS + "status");
     URI ADMS_CONTACT_POINT = valueFactory.createURI(ADMS_NS + "contactPoint");
+    URI ADMS_IDENTIFIER = valueFactory.createURI(ADMS_NS + "identifier");
     URI ODS_NS = valueFactory.createURI("http://data.opendatasupport.eu/ontology/harmonisation.owl#");
     URI ODS_RAW_CATALOG = valueFactory.createURI(ODS_NS + "raw_catalog");
     URI ODS_RAW_DATASET = valueFactory.createURI(ODS_NS + "raw_dataset");
     URI ODS_HARVEST_DATE = valueFactory.createURI(ODS_NS + "harvest_date");
+    URI ADMS_VERSION = valueFactory.createURI(ADMS_NS + "version");
+    URI ADMS_VERSION_NOTES = valueFactory.createURI(ADMS_NS + "versionNotes");
 }

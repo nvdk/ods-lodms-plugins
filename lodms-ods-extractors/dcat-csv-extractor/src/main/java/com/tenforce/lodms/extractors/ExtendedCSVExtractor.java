@@ -16,6 +16,7 @@
 
 package com.tenforce.lodms.extractors;
 
+import com.tenforce.lodms.ODSVoc;
 import org.apache.commons.csv.CSVParser;
 import org.deri.any23.extractor.ExtractionContext;
 import org.deri.any23.extractor.ExtractionException;
@@ -32,8 +33,8 @@ import org.openrdf.model.URI;
 import org.openrdf.model.Value;
 import org.openrdf.model.impl.LiteralImpl;
 import org.openrdf.model.impl.URIImpl;
+import org.openrdf.model.impl.ValueFactoryImpl;
 import org.openrdf.model.vocabulary.RDF;
-import org.openrdf.model.vocabulary.RDFS;
 import org.openrdf.model.vocabulary.XMLSchema;
 
 import java.io.IOException;
@@ -51,7 +52,7 @@ public class ExtendedCSVExtractor implements Extractor.ContentExtractor {
 
     private CSVParser csvParser;
 
-    private URI[] headerURIs;
+    private CSVHeader[] headers;
 
     private CSV csv = CSV.getInstance();
 
@@ -88,10 +89,7 @@ public class ExtendedCSVExtractor implements Extractor.ContentExtractor {
 
         // get the header and generate the URIs for column names
         String[] header = csvParser.getLine();
-        headerURIs = processHeader(header, documentURI);
-
-        // write triples to describe properties
-//        writeHeaderPropertiesMetadata(header, out);
+        headers = processHeader(header, documentURI);
 
         String[] nextLine;
 
@@ -120,34 +118,6 @@ public class ExtendedCSVExtractor implements Extractor.ContentExtractor {
     }
 
     /**
-     * It writes <i>RDF</i> statements representing properties of the header.
-     *
-     * @param header
-     * @param out
-     */
-    private void writeHeaderPropertiesMetadata(String[] header, ExtractionResult out) {
-        int index = 0;
-        for (URI singleHeader : headerURIs) {
-            if (index > headerURIs.length) {
-                break;
-            }
-            if (!RDFUtils.isAbsoluteURI(header[index])) {
-                out.writeTriple(
-                        singleHeader,
-                        RDFS.LABEL,
-                        new LiteralImpl(header[index])
-                );
-            }
-            out.writeTriple(
-                    singleHeader,
-                    csv.columnPosition,
-                    new LiteralImpl(String.valueOf(index), XMLSchema.INTEGER)
-            );
-            index++;
-        }
-    }
-
-    /**
      * It process the first row of the file, returning a list of {@link URI}s representing
      * the properties for each column. If a value of the header is an absolute <i>URI</i>
      * then it leave it as is. Otherwise the {@link CSV} vocabulary is used.
@@ -155,17 +125,23 @@ public class ExtendedCSVExtractor implements Extractor.ContentExtractor {
      * @param header
      * @return an array of {@link URI}s identifying the column names.
      */
-    private URI[] processHeader(String[] header, URI documentURI) {
-        URI[] result = new URI[header.length];
+    private CSVHeader[] processHeader(String[] header, URI documentURI) {
+        CSVHeader[] result = new CSVHeader[header.length];
         int index = 0;
         for (String h : header) {
             String candidate = h.trim();
             if (RDFUtils.isAbsoluteURI(candidate)) {
-                result[index] = new URIImpl(candidate);
+                result[index] = new CSVHeader(new URIImpl(candidate));
             } else if (CSVLabelMap.HEADERS.containsKey(candidate)) {
-                result[index] = CSVLabelMap.HEADERS.get(candidate);
+                result[index] = new CSVHeader(CSVLabelMap.HEADERS.get(candidate));
+            } else if (candidate.matches("description_([a-z]{2})")) {
+                result[index] = new CSVHeader(ODSVoc.DCT_DESCRIPTION, candidate.substring(candidate.length() - 2));
+            } else if (candidate.matches("title_([a-z]{2})")) {
+                result[index] = new CSVHeader(ODSVoc.DCT_TITLE, candidate.substring(candidate.length() - 2));
+            } else if (candidate.matches("keyword/tag_([a-z]{2})")) {
+                result[index] = new CSVHeader(ODSVoc.DCAT_KEYWORD, candidate.substring(candidate.length() - 2));
             } else {
-                result[index] = normalize(candidate, documentURI);
+                result[index] = new CSVHeader(normalize(candidate, documentURI));
             }
             index++;
         }
@@ -197,10 +173,10 @@ public class ExtendedCSVExtractor implements Extractor.ContentExtractor {
             ExtractionResult out
     ) {
         URI rowSubject = new URIImpl(values[0]);
-        out.writeTriple(rowSubject, RDF.TYPE, headerURIs[0]);
+        out.writeTriple(rowSubject, RDF.TYPE, headers[0].getUri());
         int index = 0;
         for (String cell : values) {
-            if (index >= headerURIs.length) {
+            if (index >= headers.length) {
                 // there are some row cells that don't have an associated column name
                 break;
             }
@@ -208,8 +184,13 @@ public class ExtendedCSVExtractor implements Extractor.ContentExtractor {
                 index++;
                 continue;
             }
-            URI predicate = headerURIs[index];
-            Value object = getObjectFromCell(cell);
+            Value object;
+            if (headers[index].hasLanguage()) {
+                object = ValueFactoryImpl.getInstance().createLiteral(cell, headers[index].getLanguage());
+            } else {
+                object = getObjectFromCell(cell);
+            }
+            URI predicate = headers[index].getUri();
             out.writeTriple(rowSubject, predicate, object);
             index++;
         }
@@ -228,32 +209,6 @@ public class ExtendedCSVExtractor implements Extractor.ContentExtractor {
             object = new LiteralImpl(cell, datatype);
         }
         return object;
-    }
-
-    /**
-     * It writes on the provided {@link ExtractionResult} some <i>RDF Statements</i>
-     * on generic properties of the <i>CSV</i> file, such as number of rows and columns.
-     *
-     * @param documentURI
-     * @param out
-     * @param numberOfRows
-     * @param numberOfColumns
-     */
-    private void addTableMetadataStatements(
-            URI documentURI,
-            ExtractionResult out,
-            int numberOfRows,
-            int numberOfColumns) {
-        out.writeTriple(
-                documentURI,
-                csv.numberOfRows,
-                new LiteralImpl(String.valueOf(numberOfRows), XMLSchema.INTEGER)
-        );
-        out.writeTriple(
-                documentURI,
-                csv.numberOfColumns,
-                new LiteralImpl(String.valueOf(numberOfColumns), XMLSchema.INTEGER)
-        );
     }
 
     /**
