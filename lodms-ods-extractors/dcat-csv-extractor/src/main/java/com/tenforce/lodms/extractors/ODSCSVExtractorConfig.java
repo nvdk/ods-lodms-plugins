@@ -1,11 +1,16 @@
 package com.tenforce.lodms.extractors;
 
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
+
 public class ODSCSVExtractorConfig {
     private String catalogCsv = "";
     private String recordCsv = "";
     private String datasetCsv = "";
     private String distributionCsv = "";
     private String agentCsv = "";
+    private String licenseCsv = "";
 
     public String getCatalogCsv() {
         return catalogCsv;
@@ -45,5 +50,25 @@ public class ODSCSVExtractorConfig {
 
     public void setAgentCsv(String agentCsv) {
         this.agentCsv = agentCsv;
+    }
+
+    public String getLicenseCsv() {
+        return licenseCsv;
+    }
+
+    public void setLicenseCsv(String licenseCsv) {
+        this.licenseCsv = licenseCsv;
+    }
+
+    // yeay reflection
+    public List<String> definedCsvs() throws IllegalAccessException {
+        List<String> csvList = new ArrayList<String>();
+        Field[] allFields = this.getClass().getDeclaredFields();
+        for (Field field : allFields) {
+            String value = (String) field.get(this);
+            if (!value.isEmpty())
+                csvList.add(value);
+        }
+        return csvList;
     }
 }

@@ -1,6 +1,7 @@
 package com.tenforce.lodms.extractors;
 
-import at.punkt.lodms.integration.ConfigBeanProvider;
+import at.punkt.lodms.integration.ConfigDialog;
+import at.punkt.lodms.integration.ConfigDialogProvider;
 import at.punkt.lodms.integration.ConfigurableBase;
 import at.punkt.lodms.integration.ConfigurationException;
 import at.punkt.lodms.integration.UIComponent;
@@ -21,7 +22,7 @@ import java.io.BufferedInputStream;
 import java.io.InputStream;
 import java.net.URL;
 
-public class ODSCSVExtractor extends ConfigurableBase<ODSCSVExtractorConfig> implements Extractor, UIComponent, ConfigBeanProvider<ODSCSVExtractorConfig> {
+public class ODSCSVExtractor extends ConfigurableBase<ODSCSVExtractorConfig> implements Extractor, UIComponent, ConfigDialogProvider<ODSCSVExtractorConfig> {
     @Override
     public ODSCSVExtractorConfig newDefaultConfig() {
         return new ODSCSVExtractorConfig();
@@ -35,11 +36,10 @@ public class ODSCSVExtractor extends ConfigurableBase<ODSCSVExtractorConfig> imp
     @Override
     public void extract(RDFHandler rdfHandler, ExtractContext extractContext) throws ExtractException {
         try {
-            extractCSVData(rdfHandler, new URL(config.getCatalogCsv()));
-            extractCSVData(rdfHandler, new URL(config.getDatasetCsv()));
-            extractCSVData(rdfHandler, new URL(config.getRecordCsv()));
-            extractCSVData(rdfHandler, new URL(config.getDistributionCsv()));
-            extractCSVData(rdfHandler, new URL(config.getAgentCsv()));
+
+            for (String csv : config.definedCsvs()) {
+                extractCSVData(rdfHandler, new URL(csv));
+            }
         } catch (Exception e) {
             throw new ExtractException(e.getMessage(), e);
         }
@@ -81,5 +81,10 @@ public class ODSCSVExtractor extends ConfigurableBase<ODSCSVExtractorConfig> imp
             throw new ExtractException(ex1);
         }
 
+    }
+
+    @Override
+    public ConfigDialog getConfigDialog(ODSCSVExtractorConfig odscsvExtractorConfig) {
+        return new ODSCSVExtractorDialog(odscsvExtractorConfig);
     }
 }

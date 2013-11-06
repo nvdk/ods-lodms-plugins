@@ -93,9 +93,6 @@ public class ExtendedCSVExtractor implements Extractor.ContentExtractor {
 
         String[] nextLine;
 
-        // ignore second row, containing description
-        csvParser.getLine();
-
         while ((nextLine = csvParser.getLine()) != null) {
             // ignore rows not starting with a URI
             if (RDFUtils.isAbsoluteURI(nextLine[0])) {
