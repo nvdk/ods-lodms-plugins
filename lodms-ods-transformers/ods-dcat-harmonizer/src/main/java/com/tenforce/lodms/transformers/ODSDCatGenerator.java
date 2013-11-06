@@ -82,9 +82,11 @@ public class ODSDCatGenerator extends TransformerBase<ODSDcatGeneratorConfig> im
             URI harmonizedDatasetUri = valueFactory.createURI(catalogUri.toString() + "dataset/" + rawDatasetId);
             connection.add(valueFactory.createStatement(catalogUri, ODSVoc.DCAT_CAT_PROP_RECORD, catalogRecordUri), graph);
             connection.add(valueFactory.createStatement(catalogRecordUri, ODSVoc.FOAF_PRIMARYTOPIC, harmonizedDatasetUri), graph);
+//            connection.add(harmonizedDatasetUri,ODSVoc.DCT_PUBLISHER,valueFactory.createURI(harmonizedDatasetUri + "/publisher"),graph);
+//            connection.add(harmonizedDatasetUri,ODSVoc.ADMS_CONTACT_POINT,valueFactory.createURI(harmonizedDatasetUri + "/contactPoint"),graph);
             connection.add(valueFactory.createStatement(catalogRecordUri, ODSVoc.RDFTYPE, ODSVoc.DCAT_CATALOGRECORD), graph);
             connection.add(valueFactory.createStatement(catalogRecordUri, ODSVoc.ODS_RAW_DATASET, rawDatasetUrl), graph);
-            connection.add(valueFactory.createStatement(catalogRecordUri, ODSVoc.DCT_MODIFIED, valueFactory.createLiteral(getXMLNow())));
+            connection.add(valueFactory.createStatement(catalogRecordUri, ODSVoc.DCT_MODIFIED, valueFactory.createLiteral(getXMLNow())), graph);
             connection.add(valueFactory.createStatement(harmonizedDatasetUri, ODSVoc.RDFTYPE, ODSVoc.DCAT_DATASET), graph);
             connection.add(valueFactory.createStatement(catalogUri, ODSVoc.DCAT_CAT_PROP_DATASET, harmonizedDatasetUri), graph);
 

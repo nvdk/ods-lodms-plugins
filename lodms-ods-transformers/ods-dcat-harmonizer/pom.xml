@@ -6,7 +6,7 @@
 
     <groupId>com.tenforce.lodms</groupId>
     <artifactId>ods-dcat-harmonizer</artifactId>
-    <version>1.0</version>
+    <version>1.0.1</version>
 
 
     <properties>
@@ -28,7 +28,7 @@
         <dependency>
             <groupId>com.tenforce.lodms</groupId>
             <artifactId>ods-vocabulary</artifactId>
-            <version>1.0</version>
+            <version>1.0.3</version>
         </dependency>
         <dependency>
             <groupId>com.tenforce.lodms</groupId>
