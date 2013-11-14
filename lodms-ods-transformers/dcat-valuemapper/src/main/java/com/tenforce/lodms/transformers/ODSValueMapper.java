@@ -37,19 +37,25 @@ public class ODSValueMapper extends TransformerBase<ODSValueMapperConfig> implem
         try {
             RepositoryConnection con = repository.getConnection();
             try {
-
+                // perform inserts first to allow n to n mapping
                 for (Mapping mapping : config.getMappings()) {
-                    String insertString, deleteString;
+                    String insertString;
                     if (mapping.getOriginalValue().startsWith("http")) {
                         insertString = generateURIInsertString(graph.stringValue(), mapping.getOriginalValue(), mapping.getHarmonizedValue());
-                        deleteString = generateURIDeleteString(graph.stringValue(), mapping.getOriginalValue());
                     } else {
                         insertString = generateInsertString(graph.stringValue(), mapping.getOriginalValue(), mapping.getHarmonizedValue());
-                        deleteString = generateDeleteString(graph.stringValue(), mapping.getOriginalValue());
                     }
                     Update insertQuery = con.prepareUpdate(QueryLanguage.SPARQL, insertString);
                     insertQuery.execute();
                     con.commit();
+                }
+                for (Mapping mapping : config.getMappings()) {
+                    String deleteString;
+                    if (mapping.getOriginalValue().startsWith("http")) {
+                        deleteString = generateURIDeleteString(graph.stringValue(), mapping.getOriginalValue());
+                    } else {
+                        deleteString = generateDeleteString(graph.stringValue(), mapping.getOriginalValue());
+                    }
                     Update deleteQuery = con.prepareUpdate(QueryLanguage.SPARQL, deleteString);
                     deleteQuery.execute();
                     con.commit();
