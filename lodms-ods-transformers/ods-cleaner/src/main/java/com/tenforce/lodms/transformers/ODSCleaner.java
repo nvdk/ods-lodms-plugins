@@ -20,16 +20,16 @@ public class ODSCleaner extends TransformerBase<Object> {
     public void transform(Repository repository, URI graph, TransformContext context) throws TransformException {
         try {
             RepositoryConnection con = repository.getConnection();
-            System.out.println("autocommit: " + con.isAutoCommit());
-            // i'm sorry you have to see this
             try {
-                Update q = con.prepareUpdate(QueryLanguage.SPARQL, "DEFINE sql:log-enable 3 WITH <" + graph + "> DELETE {?vvvo ?vvvvp ?vvvvo} WHERE  {{?s <" + ODSVoc.ODS_RAW_CATALOG + "> ?v}{?v ?vp ?vo}{?vo ?vvp ?vvo}{?vvo ?vvvp ?vvvo}{?vvvo ?vvvvp ?vvvvo}}");
+                Update q = con.prepareUpdate(QueryLanguage.SPARQL, "DEFINE sql:log-enable 3 WITH <" + graph + "> DELETE {?vvvo ?vvvvp ?vvvvo} WHERE  {?s <" + ODSVoc.ODS_RAW_CATALOG + "> ?v. ?v ?vp ?vo. ?vo ?vvp ?vvo. ?vvo ?vvvp ?vvvo. ?vvvo ?vvvvp ?vvvvo}");
                 q.execute();
-                q = con.prepareUpdate(QueryLanguage.SPARQL, "DEFINE sql:log-enable 3 WITH <" + graph + "> DELETE {?vvo ?vvvp ?vvvo} WHERE  {{?s  <" + ODSVoc.ODS_RAW_CATALOG + "> ?v}{?v ?vp ?vo}{?vo ?vvp ?vvo}{?vvo ?vvvp ?vvvo}}");
+                q = con.prepareUpdate(QueryLanguage.SPARQL, "DEFINE sql:log-enable 3 WITH <" + graph + "> DELETE {?vvo ?vvvp ?vvvo} WHERE  {?s  <" + ODSVoc.ODS_RAW_CATALOG + "> ?v. ?v ?vp ?vo. ?vo ?vvp ?vvo. ?vvo ?vvvp ?vvvo}");
                 q.execute();
-                q = con.prepareUpdate(QueryLanguage.SPARQL, "DEFINE sql:log-enable 3  WITH <" + graph + "> DELETE {?vo?vvp ?vvo} WHERE  {{?s  <" + ODSVoc.ODS_RAW_CATALOG + "> ?rawCatalog}{?rawCatalog ?p ?o}{?o ?vp ?vo}}");
+                q = con.prepareUpdate(QueryLanguage.SPARQL, "DEFINE sql:log-enable 3  WITH <" + graph + "> DELETE {?vo?vvp ?vvo} WHERE  {?s  <" + ODSVoc.ODS_RAW_CATALOG + "> ?rawCatalog. ?rawCatalog ?p ?o. ?o ?vp ?vo. ?vo ?vvp ?vvo}");
                 q.execute();
-                q = con.prepareUpdate(QueryLanguage.SPARQL, "DEFINE sql:log-enable 3  WITH <" + graph + "> DELETE {?v?vp ?vo} WHERE  {{?s  <" + ODSVoc.ODS_RAW_CATALOG + "> ?rawCatalog}{?rawCatalog ?p ?o}}");
+                q = con.prepareUpdate(QueryLanguage.SPARQL, "DEFINE sql:log-enable 3  WITH <" + graph + "> DELETE {?o ?vp ?vo} WHERE  {?s  <" + ODSVoc.ODS_RAW_CATALOG + "> ?rawCatalog. ?rawCatalog ?p ?o. ?o ?vp ?vo}");
+                q.execute();
+                q = con.prepareUpdate(QueryLanguage.SPARQL, "DEFINE sql:log-enable 3  WITH <" + graph + "> DELETE {?rawCatalog ?p ?o} WHERE  {?s  <" + ODSVoc.ODS_RAW_CATALOG + "> ?rawCatalog. ?rawCatalog ?p ?o}");
                 q.execute();
                 con.commit();
             } catch (RepositoryException e) {
