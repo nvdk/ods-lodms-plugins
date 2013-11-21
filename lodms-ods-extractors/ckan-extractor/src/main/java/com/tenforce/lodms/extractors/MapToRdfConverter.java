@@ -1,5 +1,6 @@
 package com.tenforce.lodms.extractors;
 
+import com.tenforce.lodms.ODSVoc;
 import org.apache.log4j.Logger;
 import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
@@ -33,14 +34,10 @@ public class MapToRdfConverter implements Callable<List<Statement>> {
   }
 
   public List<Statement> convert() {
-    String provenancePrefix = "http://data.opendatasupport.eu/ontology/harmonisation.owl#";
-    URI contentHash = valueFactory.createURI(provenancePrefix + "content_hash");
-    Statement s = valueFactory.createStatement(valueFactory.createURI(subjectPrefix), contentHash, valueFactory.createLiteral(map.hashCode()));
+    Statement s = valueFactory.createStatement(valueFactory.createURI(subjectPrefix), ODSVoc.ODS_CONTENT_HASH, valueFactory.createLiteral(map.hashCode()));
     statements.add(s);
     convertHashmapToStatements(subjectPrefix, map);
-    List<Statement> result = Collections.unmodifiableList(statements);
-    statements.clear();
-    return result;
+    return statements;
   }
 
   /*
