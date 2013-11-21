@@ -62,7 +62,7 @@ public class CkanExtractor extends ConfigurableBase<CkanExtractorConfig> impleme
             else
                 harvester.harvest(packageIds);
         } catch (Exception e) {
-          throw new ExtractException(e.getMessage(), e);
+            throw new ExtractException(e.getMessage(), e);
         }
     }
 

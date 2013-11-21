@@ -2,8 +2,13 @@ package com.tenforce.lodms.extractors;
 
 import com.vaadin.data.Item;
 import com.vaadin.data.validator.AbstractStringValidator;
-import com.vaadin.ui.*;
-import org.openrdf.model.URI;
+import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.DefaultFieldFactory;
+import com.vaadin.ui.Field;
+import com.vaadin.ui.TextField;
+import com.vaadin.ui.TwinColSelect;
+import com.vaadin.ui.VerticalLayout;
 import org.openrdf.model.impl.URIImpl;
 
 public class CkanExtractFieldFactory extends DefaultFieldFactory {
@@ -20,7 +25,7 @@ public class CkanExtractFieldFactory extends DefaultFieldFactory {
                 @Override
                 protected boolean isValidString(String value) {
                     try {
-                        URI u = new URIImpl(value);
+                        new URIImpl(value);
                         return true;
                     } catch (Exception ex) {
                         setErrorMessage("Invalid CKAN Url: " + ex.getMessage());

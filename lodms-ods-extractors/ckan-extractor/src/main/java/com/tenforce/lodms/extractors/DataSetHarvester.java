@@ -1,41 +1,47 @@
 package com.tenforce.lodms.extractors;
 
-import org.openrdf.model.Statement;
+import org.apache.log4j.Logger;
+import org.openrdf.rio.RDFHandlerException;
 import org.springframework.http.HttpEntity;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.Callable;
+import java.util.concurrent.CountDownLatch;
 
-public class DataSetHarvester implements Callable<List<Statement>> {
-    private RestTemplate rest;
+public class DataSetHarvester implements Runnable {
+    private RestTemplate rest = RestTemplateFactory.getRestTemplate();
     private String apiUri;
     private String dataSetId;
     private MapToRdfConverter converter;
+    private String subjectPrefix;
+    private  List<String> warnings;
+    private CountDownLatch barrier;
+    private Logger logger = Logger.getLogger(DataSetHarvester.class);
 
-    public DataSetHarvester(MapToRdfConverter converter, String apiUri, String dataSetId) {
+    public DataSetHarvester(CountDownLatch barrier,MapToRdfConverter converter, String apiUri, String subjectPrefix, String dataSetId, List<String> warnings) {
         this.apiUri = apiUri;
         this.dataSetId = dataSetId;
         this.converter = converter;
-        rest = RestTemplateFactory.getRestTemplate();
+        this.subjectPrefix = subjectPrefix;
+        this.warnings = warnings;
+        this.barrier = barrier;
     }
 
     @Override
-    public List<Statement> call() throws HttpClientErrorException, ResourceAccessException {
+    public void run() {
         HashMap map = new HashMap<String, String>();
         map.put("id", dataSetId);
         HttpEntity<?> httpEntity = new HttpEntity<Object>(map, RestTemplateFactory.getHttpHeaders());
-
+        CkanDataSet dataSet = rest.postForObject(apiUri + "action/package_show", httpEntity, CkanDataSet.class);
         try {
-            CkanDataSet dataSet = rest.postForObject(apiUri + "action/package_show", httpEntity, CkanDataSet.class);
-            converter.setMap(dataSet.getResult());
-            return converter.convert();
-        } catch (HttpClientErrorException e) {
-            return Collections.emptyList();
+            converter.convert(dataSet.getResult(), subjectPrefix + dataSetId);
+        } catch (RDFHandlerException e) {
+            logger.warn(e.getMessage());
+            warnings.add(e.getMessage());
+        }
+        finally {
+            barrier.countDown();
         }
     }
 }
