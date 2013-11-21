@@ -1,6 +1,10 @@
 package com.tenforce.lodms.extractors;
 
-import at.punkt.lodms.integration.*;
+import at.punkt.lodms.integration.ConfigDialog;
+import at.punkt.lodms.integration.ConfigDialogProvider;
+import at.punkt.lodms.integration.ConfigurableBase;
+import at.punkt.lodms.integration.ConfigurationException;
+import at.punkt.lodms.integration.UIComponent;
 import at.punkt.lodms.spi.extract.ExtractContext;
 import at.punkt.lodms.spi.extract.ExtractException;
 import at.punkt.lodms.spi.extract.Extractor;
@@ -8,9 +12,7 @@ import com.vaadin.Application;
 import com.vaadin.terminal.ClassResource;
 import com.vaadin.terminal.Resource;
 import org.openrdf.rio.RDFHandler;
-import org.openrdf.rio.RDFHandlerException;
 
-import javax.xml.datatype.DatatypeConfigurationException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -59,12 +61,9 @@ public class CkanExtractor extends ConfigurableBase<CkanExtractorConfig> impleme
                 harvester.harvest();
             else
                 harvester.harvest(packageIds);
-        } catch (RDFHandlerException e) {
-            throw new ExtractException(e.getMessage(), e);
-        } catch (DatatypeConfigurationException e) {
-            throw new ExtractException(e.getMessage(), e);
+        } catch (Exception e) {
+          throw new ExtractException(e.getMessage(), e);
         }
-
     }
 
     @Override
