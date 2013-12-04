@@ -95,6 +95,8 @@ public class MapToRdfConverter {
             storeValue(subject, predicate, (Boolean) value);
         } else if (value instanceof Integer) {
             storeValue(subject, predicate, (Integer) value);
+        } else if (value instanceof Long) {
+            storeValue(subject, predicate, (Long) value);
         } else if (value instanceof Map.Entry) {
             Map.Entry<String, Object> keyValuePair = (Map.Entry<String, Object>) value;
             String newSubj = generateKey(subjectStr, key);
@@ -105,10 +107,14 @@ public class MapToRdfConverter {
         } else if (value instanceof HashMap) {
             convertHashmapToStatements(generateKey(subjectStr, key), (Map) value);
         }
+
         // oops, encountered a value format we do not support yet
         else {
             logger.warn("unsupported class: " + value.getClass() + " for value " + value.toString());
         }
+    }
+    private void storeValue(URI subject, URI predicate, Long value) throws RDFHandlerException {
+        handler.handleStatement(valueFactory.createStatement(subject, predicate, valueFactory.createLiteral(value)));
     }
 
     private void storeValue(URI subject, URI predicate, Integer value) throws RDFHandlerException {
