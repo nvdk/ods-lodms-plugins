@@ -8,6 +8,7 @@ import at.punkt.lodms.integration.UIComponent;
 import at.punkt.lodms.spi.load.LoadContext;
 import at.punkt.lodms.spi.load.LoadException;
 import at.punkt.lodms.spi.load.Loader;
+import at.punkt.lodms.util.BatchedRdfInserter;
 import com.vaadin.Application;
 import com.vaadin.terminal.ClassResource;
 import com.vaadin.terminal.Resource;
@@ -22,13 +23,15 @@ import org.openrdf.repository.Repository;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.RepositoryResult;
+import org.openrdf.repository.util.RDFInserter;
+import org.openrdf.rio.RDFHandlerException;
 import virtuoso.sesame2.driver.VirtuosoRepository;
 
 public class VirtuosoLoader extends ConfigurableBase<VirtuosoLoaderConfig> implements Loader, UIComponent, ConfigDialogProvider<VirtuosoLoaderConfig> {
     protected Logger logger = Logger.getLogger(VirtuosoLoader.class);
     private VirtuosoRepository repository;
     private boolean versioned;
-    public static final int BATCH_SIZE = 5000;
+    public static final int BATCH_SIZE = 2000;
 
     @Override
     public void load(Repository rpstr, URI uri, LoadContext lc) throws LoadException {
@@ -44,42 +47,51 @@ public class VirtuosoLoader extends ConfigurableBase<VirtuosoLoaderConfig> imple
             if (versioned) {
                 backupGraph(graph);
             }
-            RepositoryConnection virtuosoConnection = repository.getConnection();
-            virtuosoConnection.setAutoCommit(false);
-            virtuosoConnection.clear(graphUri);
             RepositoryResult<Statement> statements = rpstr.getConnection().getStatements(null, null, null, true, uri);
-            int i = 0;
-            while (statements.hasNext()) {
-                Statement s = statements.next();
-                virtuosoConnection.add(s, graphUri);
-                if (i++ >= BATCH_SIZE) {
-                    virtuosoConnection.commit();
-                    i = 0;
-                }
-            }
-            virtuosoConnection.commit();
-            virtuosoConnection.close();
+            loadwithInserter(statements, graphUri);
+            statements.close();
         } catch (RepositoryException e) {
             throw new LoadException(e.getMessage(), e);
         } catch (IllegalArgumentException e) {
             throw new LoadException(e.getMessage(), e);
+        } catch (RDFHandlerException e) {
+            lc.getWarnings().add(e.getMessage());
+        }
+    }
+
+    private void loadwithInserter(RepositoryResult<Statement> statements, URI graphUri) throws RepositoryException, RDFHandlerException {
+        RepositoryConnection virtuosoConnection = repository.getConnection();
+        virtuosoConnection.clear(graphUri);
+        virtuosoConnection.setAutoCommit(false);
+        try {
+            RDFInserter inserter = new BatchedRdfInserter(virtuosoConnection, BATCH_SIZE);
+            inserter.enforceContext(graphUri);
+            while (statements.hasNext()) {
+                Statement s = statements.next();
+                inserter.handleStatement(s);
+            }
+            virtuosoConnection.commit();
+        }
+        finally {
+            virtuosoConnection.close();
         }
     }
 
     private void backupGraph(String graph) throws LoadException {
         URI backupGraph = ValueFactoryImpl.getInstance().createURI(graph + "previous");
         URI orgGraph = ValueFactoryImpl.getInstance().createURI(graph);
-        copyGraph(orgGraph, backupGraph);
+        copyGraph(repository,orgGraph, backupGraph,false);
     }
 
-    private void copyGraph(URI orgGraph, URI destGraph) throws LoadException {
-        RepositoryConnection virtuosoConnection;
+    private void copyGraph(Repository repository,URI orgGraph, URI destGraph,boolean useCopy) throws LoadException {
+        RepositoryConnection connection;
         try {
-            virtuosoConnection = repository.getConnection();
-            String query = "define sql:log-enable 3 COPY <" + orgGraph + "> TO <" + destGraph + ">";
-            virtuosoConnection.prepareGraphQuery(QueryLanguage.SPARQL, query).evaluate();
-            virtuosoConnection.commit();
-            virtuosoConnection.close();
+            connection = repository.getConnection();
+            String action = useCopy ? "COPY" : "MOVE";
+            String query = "define sql:log-enable 3 " + action +" <" + orgGraph + "> TO <" + destGraph + ">";
+            connection.prepareGraphQuery(QueryLanguage.SPARQL, query).evaluate();
+            connection.commit();
+            connection.close();
         } catch (RepositoryException e) {
             throw new LoadException(e.getMessage(), e);
         } catch (QueryEvaluationException e) {
@@ -114,7 +126,13 @@ public class VirtuosoLoader extends ConfigurableBase<VirtuosoLoaderConfig> imple
         String connectionString = "jdbc:virtuoso://" + config.getHost() + ':' + config.getPort();
         versioned = config.isVersioned();
         repository = new VirtuosoRepository(connectionString, config.getUserName(), config.getPassword(), true);
-
+        logger.info("starting load");
+        try {
+            RepositoryConnection con = repository.getConnection();
+            con.close();
+        } catch (RepositoryException e) {
+            logger.error(e.getMessage());
+        }
     }
 
     @Override
