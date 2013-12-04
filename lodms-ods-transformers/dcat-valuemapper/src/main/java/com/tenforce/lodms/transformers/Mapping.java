@@ -3,6 +3,7 @@ package com.tenforce.lodms.transformers;
 public class Mapping {
     private String originalValue;
     private String harmonizedValue;
+    private boolean validMapping = true;
 
     public Mapping() {
         this("","http://example.org/me#");
@@ -26,4 +27,12 @@ public class Mapping {
     public void setOriginalValue(String originalValue) {
         this.originalValue = originalValue;
     }
+
+  public boolean isValidMapping() {
+    return validMapping;
+  }
+
+  public void setValidMapping(boolean validMapping) {
+    this.validMapping = validMapping;
+  }
 }

@@ -59,7 +59,7 @@ public class ODSValueMapperDialog extends HorizontalLayout implements ConfigDial
         mappingTable.setWidth(100, UNITS_PERCENTAGE);
         mappingTable.setHeight(300, UNITS_PIXELS);
         mappingTable.setContainerDataSource(mappings);
-        mappingTable.setVisibleColumns(new String[]{"originalValue", "harmonizedValue"});
+        mappingTable.setVisibleColumns(new String[]{"originalValue", "harmonizedValue","validMapping"});
         mappingTable.addGeneratedColumn("delete", new Table.ColumnGenerator() {
 
             @Override

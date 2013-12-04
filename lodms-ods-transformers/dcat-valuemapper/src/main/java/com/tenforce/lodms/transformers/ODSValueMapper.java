@@ -6,15 +6,18 @@ import at.punkt.lodms.integration.ConfigDialogProvider;
 import at.punkt.lodms.integration.ConfigurationException;
 import at.punkt.lodms.spi.transform.TransformContext;
 import at.punkt.lodms.spi.transform.TransformException;
+import com.tenforce.lodms.ODSVoc;
 import com.vaadin.Application;
 import com.vaadin.terminal.ClassResource;
 import com.vaadin.terminal.Resource;
 import org.openrdf.model.URI;
+import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.QueryLanguage;
 import org.openrdf.query.Update;
 import org.openrdf.query.UpdateExecutionException;
 import org.openrdf.repository.Repository;
 import org.openrdf.repository.RepositoryConnection;
+import org.openrdf.repository.RepositoryException;
 
 public class ODSValueMapper extends TransformerBase<ODSValueMapperConfig> implements ConfigDialogProvider<ODSValueMapperConfig> {
 
@@ -39,26 +42,10 @@ public class ODSValueMapper extends TransformerBase<ODSValueMapperConfig> implem
             try {
                 // perform inserts first to allow n to n mapping
                 for (Mapping mapping : config.getMappings()) {
-                    String insertString;
-                    if (mapping.getOriginalValue().startsWith("http")) {
-                        insertString = generateURIInsertString(graph.stringValue(), mapping.getOriginalValue(), mapping.getHarmonizedValue());
-                    } else {
-                        insertString = generateInsertString(graph.stringValue(), mapping.getOriginalValue(), mapping.getHarmonizedValue());
-                    }
-                    Update insertQuery = con.prepareUpdate(QueryLanguage.SPARQL, insertString);
-                    insertQuery.execute();
-                    con.commit();
+                    insertMappings(graph, con, mapping);
                 }
                 for (Mapping mapping : config.getMappings()) {
-                    String deleteString;
-                    if (mapping.getOriginalValue().startsWith("http")) {
-                        deleteString = generateURIDeleteString(graph.stringValue(), mapping.getOriginalValue());
-                    } else {
-                        deleteString = generateDeleteString(graph.stringValue(), mapping.getOriginalValue());
-                    }
-                    Update deleteQuery = con.prepareUpdate(QueryLanguage.SPARQL, deleteString);
-                    deleteQuery.execute();
-                    con.commit();
+                    removeOriginals(graph, con, mapping);
                 }
             } catch (UpdateExecutionException e) {
                 context.getWarnings().add(e.getMessage());
@@ -68,6 +55,39 @@ public class ODSValueMapper extends TransformerBase<ODSValueMapperConfig> implem
         } catch (Exception e) {
             throw new TransformException(e.getMessage(), e);
         }
+    }
+
+    private void removeOriginals(URI graph, RepositoryConnection con, Mapping mapping) throws RepositoryException, MalformedQueryException, UpdateExecutionException {
+        String deleteString;
+        if (mapping.getOriginalValue().startsWith("http")) {
+            deleteString = generateURIDeleteString(graph.stringValue(), mapping.getOriginalValue());
+        } else {
+            deleteString = generateDeleteString(graph.stringValue(), mapping.getOriginalValue());
+        }
+        Update deleteQuery = con.prepareUpdate(QueryLanguage.SPARQL, deleteString);
+        deleteQuery.execute();
+        con.commit();
+    }
+
+    private void insertMappings(URI graph, RepositoryConnection con, Mapping mapping) throws RepositoryException, MalformedQueryException, UpdateExecutionException {
+        String insertString;
+        if (!mapping.isValidMapping()) {
+            insertString = generateOtherInsertString(graph.stringValue(), mapping.getOriginalValue());
+        } else if (mapping.getOriginalValue().startsWith("http")) {
+            insertString = generateURIInsertString(graph.stringValue(), mapping.getOriginalValue(), mapping.getHarmonizedValue());
+        } else {
+            insertString = generateInsertString(graph.stringValue(), mapping.getOriginalValue(), mapping.getHarmonizedValue());
+        }
+        Update insertQuery = con.prepareUpdate(QueryLanguage.SPARQL, insertString);
+        insertQuery.execute();
+        con.commit();
+    }
+
+    private String generateOtherInsertString(String graph, String originalValue) {
+        String predicate = config.getMappedPredicate().getDcatProp().stringValue();
+        String dcatClass = config.getMappedPredicate().getDcatClass().stringValue();
+        String query = "WITH <%s> INSERT { ?s <%s> [a <%s>;<%s> <%s>]} WHERE {?s a <%s>.  {{?s <%s> \"%s\"} UNION {?s <%s> <%s>}} }";
+        return String.format(query, graph, predicate, ODSVoc.ODS_OTHER_VALUE, ODSVoc.ODS_ORIGINAL_VALUE, originalValue, predicate, originalValue, predicate, originalValue);
     }
 
     private String generateURIInsertString(String graph, String originalValue, String newValue) {
