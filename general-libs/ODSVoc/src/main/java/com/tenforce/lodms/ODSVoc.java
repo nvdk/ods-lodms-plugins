@@ -53,4 +53,6 @@ public interface ODSVoc {
   URI ODS_HARVEST_DATE = valueFactory.createURI(ODS_NS + "harvest_date");
   URI ADMS_VERSION = valueFactory.createURI(ADMS_NS + "version");
   URI ADMS_VERSION_NOTES = valueFactory.createURI(ADMS_NS + "versionNotes");
+  URI ODS_OTHER_VALUE = valueFactory.createURI(ODS_NS + "OtherValue");
+  URI ODS_ORIGINAL_VALUE = valueFactory.createURI(ODS_NS + "originalValue");
 }
