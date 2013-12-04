@@ -3,6 +3,7 @@ package com.tenforce.lodms.transformers;
 import com.tenforce.lodms.ODSVoc;
 import com.vaadin.data.validator.AbstractStringValidator;
 import com.vaadin.ui.Select;
+import org.openrdf.model.URI;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +27,14 @@ public class PredicateSelector extends Select {
     public PredicateSelector(String caption) {
         super(caption);
         configurePSelect();
+    }
+
+    public void selectPredicate(URI value) {
+      for (MappedPredicate m : predicates) {
+        if(m.getDcatProp().equals(value)) {
+          this.setValue(m);
+        }
+      }
     }
 
     private void configurePSelect() {

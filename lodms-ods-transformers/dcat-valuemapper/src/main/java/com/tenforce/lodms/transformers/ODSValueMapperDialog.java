@@ -6,7 +6,6 @@ import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Select;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import org.openrdf.model.URI;
@@ -17,7 +16,7 @@ import java.util.List;
 public class ODSValueMapperDialog extends HorizontalLayout implements ConfigDialog {
     private  ODSValueMapperConfig config;
     private final Table mappingTable = new Table("Value Mapping");
-    private final Select predicateSelector = new PredicateSelector("DCAT Property");
+    private final PredicateSelector predicateSelector = new PredicateSelector("DCAT Property");
     private final Button addMapping = new Button("Add row");
     private final Button clearMapping = new Button("Clear table");
     private final Button showLoader = new Button("Load values from store");
@@ -130,6 +129,8 @@ public class ODSValueMapperDialog extends HorizontalLayout implements ConfigDial
     }
 
     private void configurePredicateSelector() {
+      if (config.getMappedPredicate() != null)
+        predicateSelector.selectPredicate(config.getMappedPredicate().getDcatProp());
         predicateSelector.addListener(new Property.ValueChangeListener() {
             @Override
             public void valueChange(Property.ValueChangeEvent event) {
