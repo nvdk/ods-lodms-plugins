@@ -1,0 +1,49 @@
+<list>
+<com.tenforce.lodms.transformers.validator.ValidationRule>
+    <sparqlQuery>PREFIX dcterms: &lt;http://purl.org/dc/terms/&gt;
+        prefix dcat:&lt;http://www.w3.org/ns/dcat#&gt;
+        SELECT
+        ?s ?p ?o
+        WHERE {
+        ?s a dcat:Dataset.
+        OPTIONAL {?s dcterms:description ?desc}.
+        FILTER (!BOUND(?desc)).
+        BIND(rdf:type AS ?p).
+        BIND(dcat:Dataset AS ?o).
+        }</sparqlQuery>
+    <description>description is a required property for datasets</description>
+    <message>no description defined for this dataset</message>
+    <severity>error</severity>
+</com.tenforce.lodms.transformers.validator.ValidationRule>
+    <com.tenforce.lodms.transformers.validator.ValidationRule>
+        <sparqlQuery>PREFIX dcterms: &lt;http://purl.org/dc/terms/&gt;
+            prefix dcat:&lt;http://www.w3.org/ns/dcat#&gt;
+            SELECT
+            ?s ?p ?o
+            WHERE {
+            ?s a dcat:Dataset.
+            OPTIONAL {?s dcterms:title ?title}.
+            FILTER (!BOUND(?title)).
+            BIND(rdf:type AS ?p).
+            BIND(dcat:Dataset AS ?o).
+            }</sparqlQuery>
+        <description>title is a required property for datasets</description>
+        <message>no title defined for this dataset</message>
+        <severity>error</severity>
+    </com.tenforce.lodms.transformers.validator.ValidationRule>
+    <com.tenforce.lodms.transformers.validator.ValidationRule>
+        <sparqlQuery>PREFIX dcterms: &lt;http://purl.org/dc/terms/&gt;
+            prefix dcat:&lt;http://www.w3.org/ns/dcat#&gt;
+            SELECT
+            ?s ?p ?o
+            WHERE {
+            ?s a dcat:Dataset.
+            OPTIONAL {?s dcterms:publisher ?agent}.
+            BIND(rdf:type AS ?p).
+            BIND(dcat:Dataset AS ?o).
+            } GROUP BY ?s HAVING (count(?agent) != 1)</sparqlQuery>
+        <description>a dataset should have exactly one publisher</description>
+        <message>dataset does not have exactly one publisher</message>
+        <severity>warning</severity>
+    </com.tenforce.lodms.transformers.validator.ValidationRule>
+</list>
