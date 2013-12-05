@@ -9,9 +9,7 @@ import java.util.List;
 
 public class OdsValidatorConfig {
     private List<ValidationRule> validationRules;
-    private Logger logger;
     public OdsValidatorConfig() {
-        logger = Logger.getLogger(this.getClass());
         validationRules = getDefaultValidationRules();
     }
 
@@ -21,6 +19,7 @@ public class OdsValidatorConfig {
             return (List<ValidationRule>) xstream.fromXML(this.getClass().getResourceAsStream("default_rules.xml"));
         }
         catch (Exception e) {
+            Logger logger = Logger.getLogger(this.getClass());
             logger.error(e.getMessage(),e);
             return Collections.emptyList();
         }

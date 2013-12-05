@@ -222,7 +222,7 @@
         <sparqlQuery>PREFIX dcterms: &lt;http://purl.org/dc/terms/&gt;
             prefix dcat:&lt;http://www.w3.org/ns/dcat#&gt;
             SELECT
-            ?s ?p ?o
+            ?s sample(?p) sample(?o)
             WHERE {
             ?s rdf:type dcat:Distribution.
             ?s ?p ?o.
@@ -236,12 +236,12 @@
         <sparqlQuery>PREFIX dcterms: &lt;http://purl.org/dc/terms/&gt;
             prefix dcat:&lt;http://www.w3.org/ns/dcat#&gt;
             SELECT
-            ?s ?p ?o
+            ?s sample(?p) sample(?o)
             WHERE {
             ?s rdf:type dcat:Distribution.
             ?s ?p ?o.
             ?s dcterms:license ?o
-            } GROUP BY ?s HAVING (count(?agent) > 1)</sparqlQuery>
+            } GROUP BY ?s HAVING (count(?o) > 1)</sparqlQuery>
         <description>a distribution should not have more than one license</description>
         <message>distribution can only have one license</message>
         <severity>warning</severity>
