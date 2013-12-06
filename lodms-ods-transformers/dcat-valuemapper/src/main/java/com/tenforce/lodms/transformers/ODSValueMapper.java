@@ -87,7 +87,7 @@ public class ODSValueMapper extends TransformerBase<ODSValueMapperConfig> implem
         String predicate = config.getMappedPredicate().getDcatProp().stringValue();
         String dcatClass = config.getMappedPredicate().getDcatClass().stringValue();
         String query = "WITH <%s> INSERT { ?s <%s> [a <%s>;<%s> <%s>]} WHERE {?s a <%s>.  {{?s <%s> \"%s\"} UNION {?s <%s> <%s>}} }";
-        return String.format(query, graph, predicate, ODSVoc.ODS_OTHER_VALUE, ODSVoc.ODS_ORIGINAL_VALUE, originalValue, predicate, originalValue, predicate, originalValue);
+        return String.format(query, graph, predicate, ODSVoc.ODS_OTHER_VALUE, ODSVoc.ODS_ORIGINAL_VALUE,dcatClass, originalValue, predicate, originalValue, predicate, originalValue);
     }
 
     private String generateURIInsertString(String graph, String originalValue, String newValue) {
