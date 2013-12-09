@@ -9,6 +9,7 @@ import com.tenforce.lodms.ODSVoc;
 import com.vaadin.Application;
 import com.vaadin.terminal.ClassResource;
 import com.vaadin.terminal.Resource;
+import info.aduna.iteration.Iterations;
 import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
@@ -74,7 +75,7 @@ public class ODSDCatGenerator extends TransformerBase<ODSDcatGeneratorConfig> im
 
     private void extractDatasetInfo(URI graph, org.openrdf.model.Resource catalogUri, Value rawGraph, RepositoryConnection connection) throws RepositoryException, DatatypeConfigurationException {
         RepositoryResult<Statement> statements = connection.getStatements(null, ODSVoc.DCAT_CAT_PROP_DATASET, null, false, graph);
-        Collection<Statement> statementList = statements.asList();
+        Collection<Statement> statementList = Iterations.asList(statements);
         for (Statement s : statementList) {
             Value rawDatasetUrl = s.getObject();
             String rawDatasetId = getRawDatasetId(rawDatasetUrl);
@@ -140,7 +141,9 @@ public class ODSDCatGenerator extends TransformerBase<ODSDcatGeneratorConfig> im
         try {
             RepositoryConnection connection = repository.getConnection();
             try {
-                List<Statement> catalogStatement = connection.getStatements(null, ODSVoc.RDFTYPE, ODSVoc.DCAT_CATALOG, false, graph).asList();
+                RepositoryResult<Statement> statements = connection.getStatements(null, ODSVoc.RDFTYPE, ODSVoc.DCAT_CATALOG, false, graph);
+                List<Statement> catalogStatement = Iterations.asList(statements);
+                statements.close();
                 if (catalogStatement.isEmpty())
                     return null;
                 return catalogStatement.get(0).getSubject();
