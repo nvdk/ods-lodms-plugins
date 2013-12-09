@@ -10,7 +10,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <lodms.version>1.0.1</lodms.version>
-        <sesame.version>2.6.10</sesame.version>
+        <sesame.version>2.7.3</sesame.version>
         <spring.version>3.1.2.RELEASE</spring.version>
     </properties>
     <build>
@@ -27,21 +27,21 @@
         </plugins>
     </build>
     <dependencies>
-    <dependency>
-        <groupId>at.punkt.lodms</groupId>
-        <artifactId>lodms-spi</artifactId>
-        <version>${lodms.version}</version>
-    </dependency>
-    <dependency>
-        <groupId>at.punkt.lodms</groupId>
-        <artifactId>lodms-web-integration</artifactId>
-        <version>${lodms.version}</version>
-    </dependency>
-    <dependency>
-        <groupId>com.tenforce.lodms</groupId>
-        <artifactId>ods-resources</artifactId>
-        <version>1.0.0</version>
-    </dependency>
+        <dependency>
+            <groupId>at.punkt.lodms</groupId>
+            <artifactId>lodms-spi</artifactId>
+            <version>${lodms.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>at.punkt.lodms</groupId>
+            <artifactId>lodms-web-integration</artifactId>
+            <version>${lodms.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.tenforce.lodms</groupId>
+            <artifactId>ods-resources</artifactId>
+            <version>1.0.0</version>
+        </dependency>
         <dependency>
             <groupId>com.tenforce.lodms</groupId>
             <artifactId>ods-vocabulary</artifactId>

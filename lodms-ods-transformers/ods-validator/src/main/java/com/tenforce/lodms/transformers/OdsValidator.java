@@ -34,13 +34,15 @@ public class OdsValidator extends TransformerBase<OdsValidatorConfig> implements
         try {
             RepositoryConnection con = repository.getConnection();
             try {
-                ValidationExecutor executor = new ValidationExecutor(con, graph, context.getWarnings());
+                ValidationExecutor executor = new ValidationExecutor(con, graph, config.getLogFilePath());
 
                 for (ValidationRule v : config.getValidationRules()) {
                     executor.validate(v);
                 }
+                context.getWarnings().addAll(executor.getWarnings());
             } catch (Exception e) {
                 logger.error(e.getMessage());
+                context.getWarnings().add(e.getMessage());
             } finally {
                 con.close();
             }

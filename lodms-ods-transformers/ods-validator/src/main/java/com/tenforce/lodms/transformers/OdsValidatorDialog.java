@@ -21,6 +21,7 @@ import com.vaadin.ui.VerticalLayout;
 import org.openrdf.query.parser.ParsedUpdate;
 import org.openrdf.query.parser.sparql.SPARQLParser;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,6 +30,7 @@ public class OdsValidatorDialog extends VerticalLayout implements ConfigDialog {
     private BeanItemContainer<ValidationRule> rules = new BeanItemContainer(ValidationRule.class);
     private OdsValidatorConfig config;
     private FormLayout ruleEditor = new FormLayout();
+    private TextField logPathField = new TextField("validation log");
     private Form ruleFields = new Form();
     private Button addButton = new Button("add rule");
     private Button removeButton = new Button("remove this rule");
@@ -60,6 +62,7 @@ public class OdsValidatorDialog extends VerticalLayout implements ConfigDialog {
                             try {
                                 ParsedUpdate parsed = parser.parseUpdate(value, null);
                             } catch (Exception ex) {
+
                                 return false;
                             }
                             return true;
@@ -108,7 +111,7 @@ public class OdsValidatorDialog extends VerticalLayout implements ConfigDialog {
         rulesTable.setHeight("100%");
         rulesTable.setImmediate(true);
         rulesTable.setSelectable(true);
-        rulesTable.setVisibleColumns(new String[]{"description","severity"});
+        rulesTable.setVisibleColumns(new String[]{"description", "severity"});
         rulesTable.addListener(new Property.ValueChangeListener() {
             public void valueChange(Property.ValueChangeEvent event) {
                 Object o = rulesTable.getValue();
@@ -139,13 +142,43 @@ public class OdsValidatorDialog extends VerticalLayout implements ConfigDialog {
         splitPanel.setMargin(true);
         splitPanel.setWidth("100%");
         splitPanel.setSizeFull();
-        addComponent(splitPanel);
+
+        logPathField.addValidator(new AbstractStringValidator(null) {
+            @Override
+            protected boolean isValidString(String value) {
+                try {
+                    if (value == null) {
+                        setErrorMessage("Invalid path: can not be null");
+                        return false;
+                    }
+                    File file = new File(value);
+                    if (!file.exists()) {
+                        setErrorMessage("Invalid path");
+                        return false;
+                    }
+                    File parent = new File(file.getParent());
+                    return parent.canWrite() || file.canWrite();
+                } catch (Exception ex) {
+                    setErrorMessage("Invalid path: " + ex.getMessage());
+                    return false;
+                }
+            }
+        });
+        logPathField.setImmediate(true);
+        logPathField.setWidth("100%");
+        logPathField.setValue(config.getLogFilePath());
+        VerticalLayout confLayout = new VerticalLayout();
+        confLayout.setMargin(true);
+        confLayout.addComponent(logPathField);
+        confLayout.addComponent(splitPanel);
+        addComponent(confLayout);
     }
 
     @Override
     public Object getConfig() {
         List rules = new ArrayList<ValidationRule>();
         rules.addAll(this.rules.getItemIds());
+        config.setLogFilePath(logPathField.getValue().toString());
         config.setValidationRules(rules);
         return config;
 

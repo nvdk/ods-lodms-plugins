@@ -8,7 +8,7 @@
     <artifactId>dcat-csv-extractor</artifactId>
     <version>1.0</version>
     <properties>
-        <sesame.version>2.6.10</sesame.version>
+        <sesame.version>2.7.3</sesame.version>
     </properties>
 
     <dependencies>

@@ -9,6 +9,8 @@ import java.util.List;
 
 public class OdsValidatorConfig {
     private List<ValidationRule> validationRules;
+    private String logFilePath = "/opt/lodmsdata/validation/example.log";
+
     public OdsValidatorConfig() {
         validationRules = getDefaultValidationRules();
     }
@@ -17,10 +19,9 @@ public class OdsValidatorConfig {
         XStream xstream = new XStream();
         try {
             return (List<ValidationRule>) xstream.fromXML(this.getClass().getResourceAsStream("default_rules.xml"));
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             Logger logger = Logger.getLogger(this.getClass());
-            logger.error(e.getMessage(),e);
+            logger.error(e.getMessage(), e);
             return Collections.emptyList();
         }
     }
@@ -31,5 +32,13 @@ public class OdsValidatorConfig {
 
     public void setValidationRules(List<ValidationRule> validationRules) {
         this.validationRules = validationRules;
+    }
+
+    public String getLogFilePath() {
+        return logFilePath;
+    }
+
+    public void setLogFilePath(String logFilePath) {
+        this.logFilePath = logFilePath;
     }
 }

@@ -10,7 +10,7 @@
 
     <properties>
         <lodms.version>1.0.1</lodms.version>
-        <sesame.version>2.6.10</sesame.version>
+        <sesame.version>2.7.3</sesame.version>
     </properties>
 
     <dependencies>
@@ -32,12 +32,12 @@
         <dependency>
             <groupId>virtuoso.sesame2</groupId>
             <artifactId>driver</artifactId>
-            <version>2.6.10-build1.10</version>
+            <version>2.7.3-build1.12</version>
         </dependency>
         <dependency>
             <groupId>virtuoso</groupId>
             <artifactId>jdbc-driver</artifactId>
-            <version>3.62</version>
+            <version>4.0</version>
         </dependency>
         <dependency>
             <groupId>com.tenforce.lodms</groupId>

@@ -198,14 +198,22 @@ public class ExtendedCSVExtractor implements Extractor.ContentExtractor {
         cell = cell.trim();
         if (RDFUtils.isAbsoluteURI(cell)) {
             object = new URIImpl(cell);
+        } else if (isNumber(cell)) {
+            object = new LiteralImpl(cell, XMLSchema.INTEGER);
+        } else if (isLanguageString(cell)) {
+            object = new LiteralImpl(cell.substring(1, cell.length() - 4), getLanguageString(cell));
         } else {
-            URI datatype = XMLSchema.STRING;
-            if (isNumber(cell)) {
-                datatype = XMLSchema.INTEGER;
-            }
-            object = new LiteralImpl(cell, datatype);
+            object = new LiteralImpl(cell, XMLSchema.STRING);
         }
         return object;
+    }
+
+    private boolean isLanguageString(String string) {
+        return (string.length() > 3 && string.substring(string.length() - 5).matches("@[a-zA-Z]{2}"));
+    }
+
+    private String getLanguageString(String string) {
+        return string.substring(string.length() - 2);
     }
 
     /**

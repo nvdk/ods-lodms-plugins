@@ -49,5 +49,6 @@ public interface CSVLabelMap {
         put("byte size", ODSVoc.DCAT_BYTE_SIZE);
         put("download URL", ODSVoc.DCAT_DOWNLOAD_URL);
         put("media type", ODSVoc.DCAT_MEDIA_TYPE);
+        put("agentURI", ODSVoc.FOAF_AGENT);
     }};
 }
