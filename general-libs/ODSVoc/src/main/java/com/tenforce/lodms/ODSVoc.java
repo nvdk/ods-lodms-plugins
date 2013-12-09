@@ -26,7 +26,8 @@ public interface ODSVoc {
   String FOAF = "http://xmlns.com/foaf/0.1/";
   URI FOAF_PRIMARYTOPIC = valueFactory.createURI(FOAF + "primaryTopic");
   URI FOAF_HOMEPAGE = valueFactory.createURI(FOAF + "homepage");
-  String DC_TERMS = "http://purl.org/dc/terms/";
+    URI FOAF_AGENT = valueFactory.createURI(FOAF + "Agent");
+    String DC_TERMS = "http://purl.org/dc/terms/";
   URI DCT_PUBLISHER = valueFactory.createURI(DC_TERMS + "publisher");
   URI DCT_MODIFIED = valueFactory.createURI(DC_TERMS + "modified");
   URI DCT_DESCRIPTION = valueFactory.createURI(DC_TERMS + "description");
