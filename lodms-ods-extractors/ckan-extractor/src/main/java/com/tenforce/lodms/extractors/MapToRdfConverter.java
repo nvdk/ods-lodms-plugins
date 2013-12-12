@@ -40,23 +40,18 @@ public class MapToRdfConverter {
     * @param List  list
     */
     private void convertListToStatements(String subjectStr, String key, List list) throws RDFHandlerException {
-        // NOTE: currently doesn't support nested list
         // NOTE: this will not store empty arrays
         URI subject = valueFactory.createURI(subjectStr);
         URI predicate = valueFactory.createURI(generateKey(predicatePrefix, key));
 
         Integer i = 0;
         for (Object o : list) {
-            String newSubj = generateKey(generateKey(subjectStr, key), i.toString());
-            if (o instanceof String) {
-                storeValue(subject, predicate, (String) o);
-            } else if (o instanceof Integer) {
-                storeValue(subject, predicate, (Integer) o);
-            } else if (o instanceof Boolean) {
-                storeValue(subject, predicate, (Boolean) o);
-            } else if (o instanceof HashMap) {
+            if (o instanceof Map) {
+                String newSubj = generateKey(generateKey(subjectStr, key), i.toString());
                 handler.handleStatement(valueFactory.createStatement(subject, predicate, valueFactory.createURI(newSubj)));
                 convertHashmapToStatements(newSubj, (Map<String, Object>) o);
+            } else {
+                convertPairToStatements(subjectStr, generateKey(predicatePrefix, key), o);
             }
             i++;
         }
@@ -113,6 +108,7 @@ public class MapToRdfConverter {
             logger.warn("unsupported class: " + value.getClass() + " for value " + value.toString());
         }
     }
+
     private void storeValue(URI subject, URI predicate, Long value) throws RDFHandlerException {
         handler.handleStatement(valueFactory.createStatement(subject, predicate, valueFactory.createLiteral(value)));
     }
