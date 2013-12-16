@@ -83,8 +83,6 @@ public class ODSDCatGenerator extends TransformerBase<ODSDcatGeneratorConfig> im
             URI harmonizedDatasetUri = valueFactory.createURI(catalogUri.toString() + "dataset/" + rawDatasetId);
             connection.add(valueFactory.createStatement(catalogUri, ODSVoc.DCAT_CAT_PROP_RECORD, catalogRecordUri), graph);
             connection.add(valueFactory.createStatement(catalogRecordUri, ODSVoc.FOAF_PRIMARYTOPIC, harmonizedDatasetUri), graph);
-//            connection.add(harmonizedDatasetUri,ODSVoc.DCT_PUBLISHER,valueFactory.createURI(harmonizedDatasetUri + "/publisher"),graph);
-//            connection.add(harmonizedDatasetUri,ODSVoc.ADMS_CONTACT_POINT,valueFactory.createURI(harmonizedDatasetUri + "/contactPoint"),graph);
             connection.add(valueFactory.createStatement(catalogRecordUri, ODSVoc.RDFTYPE, ODSVoc.DCAT_CATALOGRECORD), graph);
             connection.add(valueFactory.createStatement(catalogRecordUri, ODSVoc.ODS_RAW_DATASET, rawDatasetUrl), graph);
             connection.add(valueFactory.createStatement(catalogRecordUri, ODSVoc.DCT_MODIFIED, valueFactory.createLiteral(getXMLNow())), graph);
@@ -101,7 +99,6 @@ public class ODSDCatGenerator extends TransformerBase<ODSDcatGeneratorConfig> im
 
     private String getRawDatasetId(String dataset) {
         if (dataset.endsWith("/")) {
-            System.out.println(dataset);
             return getRawDatasetId(dataset.substring(0, dataset.length() - 1));
         }
 
@@ -137,7 +134,6 @@ public class ODSDCatGenerator extends TransformerBase<ODSDcatGeneratorConfig> im
     }
 
     private Value getRawGraph(Repository repository, URI graph) throws TransformException {
-        RepositoryResult<Statement> s = null;
         try {
             RepositoryConnection connection = repository.getConnection();
             try {
@@ -148,8 +144,9 @@ public class ODSDCatGenerator extends TransformerBase<ODSDcatGeneratorConfig> im
                     return null;
                 return catalogStatement.get(0).getSubject();
             } catch (RepositoryException e) {
-                connection.close();
                 return null;
+            } finally {
+                connection.close();
             }
         } catch (RepositoryException e) {
             throw new TransformException(e.getMessage(), e);
