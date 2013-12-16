@@ -65,6 +65,7 @@ public class MultipleSparqlUpdateTransformer extends TransformerBase<MultipleSpa
         try {
             RepositoryConnection connection = repository.getConnection();
             performUpdateQueries(config.getQueries(), connection, context.getWarnings(), graph);
+            connection.close();
         } catch (RepositoryException e) {
             logger.error(e.getMessage());
             logger.error(e.getStackTrace());
