@@ -9,7 +9,7 @@ import java.util.List;
 
 public class OdsValidatorConfig {
     private List<ValidationRule> validationRules;
-    private String logFilePath = "/opt/lodmsdata/validation/example.log";
+    private String logFilePath = "/var/www/data.opendatasupport.eu/validation/example.log";
 
     public OdsValidatorConfig() {
         validationRules = getDefaultValidationRules();

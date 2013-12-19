@@ -8,36 +8,24 @@ import org.openrdf.query.TupleQueryResult;
 import org.openrdf.repository.RepositoryConnection;
 
 import javax.xml.transform.TransformerException;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.logging.FileHandler;
-import java.util.logging.Logger;
-import java.util.logging.SimpleFormatter;
 
 public class ValidationExecutor {
     private RepositoryConnection connection;
     private URI context;
     private List<String> warnings = new ArrayList<String>();
-    private Logger validationLogger = Logger.getLogger("ValidationExecutor");
+    private ValidationLogWriter validationLogger;
 
-    public ValidationExecutor(RepositoryConnection connection, URI context, String logFilePath) {
+    public ValidationExecutor(ValidationLogWriter logWriter, RepositoryConnection connection, URI context) {
         this.connection = connection;
         this.context = context;
-        FileHandler fh;
-
-        try {
-            fh = new FileHandler(logFilePath);
-            validationLogger.addHandler(fh);
-            SimpleFormatter formatter = new SimpleFormatter();
-            fh.setFormatter(formatter);
-        } catch (SecurityException e) {
-            throw new IllegalArgumentException(e.getMessage(), e);
-        } catch (IOException e) {
-            throw new IllegalArgumentException(e.getMessage(), e);
-        }
+        validationLogger = logWriter;
         validationLogger.info("configured for context: " + context.stringValue());
+        String overview = getOverview();
+        validationLogger.info(overview);
+        warnings.add(overview);
     }
 
     public void validate(ValidationRule rule) throws TransformerException {
@@ -51,26 +39,50 @@ public class ValidationExecutor {
                     createWarning(rule.getSeverity(), rule.getMessage(), result.next());
                     i++;
                 }
-                warnings.add("rule " + rule.getDescription() + ": " + i + " failures");
+                if (i > 0)
+                    warnings.add(rule.getDescription() + ": " + i + " failures");
             } else {
-                warnings.add("rule " + rule.getDescription() + " does not bind all required names ?s, ?p,?o");
+                warnings.add(rule.getDescription() + " does not bind all required names ?s, ?p,?o");
             }
         } catch (Exception e) {
             throw new TransformerException(e.getMessage(), e);
         }
-
-
     }
 
     public List<String> getWarnings() {
         return warnings;
     }
 
+    private String getOverview() {
+        String rawQuery = "PREFIX dcterms: <http://purl.org/dc/terms/>\n" +
+                "PREFIX dcat:<http://www.w3.org/ns/dcat#>\n" +
+                "PREFIX foaf:<http://xmlns.com/foaf/0.1/>\n" +
+                "SELECT (COUNT(?d) AS ?ds) (COUNT(?di) AS ?dist) (COUNT(?a) AS ?agent)\n" +
+                "WHERE {\n" +
+                "{?d a dcat:Dataset.}\n" +
+                "UNION\n" +
+                "{?di a dcat:Distribution}\n" +
+                "UNION\n" +
+                "{?a a foaf:Agent}\n" +
+                "}";
+        String queryString = String.format("define input:default-graph-uri <%s> %s", context.stringValue(), rawQuery);
+        try {
+            TupleQuery query = connection.prepareTupleQuery(QueryLanguage.SPARQL, queryString);
+            TupleQueryResult result = query.evaluate();
+            BindingSet set = result.next();
+            result.close();
+            return String.format("Validated \n %s datasets \n %s distributions \n %s agents", set.getValue("ds").stringValue(), set.getValue("dist").stringValue(), set.getValue("agent").stringValue());
+
+        } catch (Exception e) {
+            return "Failed to retrieve class counts";
+        }
+    }
+
     private void createWarning(String severity, String message, BindingSet row) {
         String s = row.getValue("s").stringValue();
         String p = row.getValue("p").stringValue();
         String o = row.getValue("o").stringValue();
-        String warning = "%s: %s {%s %s %s}";
-        validationLogger.warning(String.format(warning, severity, message, s, p, o));
+        String warning = "%s\n \t{%s %s %s}";
+        validationLogger.write(severity, String.format(warning, message, s, p, o));
     }
 }

@@ -10,240 +10,1027 @@
             FILTER (!BOUND(?desc)).
             BIND(rdf:type AS ?p).
             BIND(dcat:Dataset AS ?o).
-            }</sparqlQuery>
-        <description>description is a required property for datasets</description>
+            }
+        </sparqlQuery>
+        <description>description is a required property for dataset</description>
         <message>no description defined for this dataset</message>
         <severity>error</severity>
     </com.tenforce.lodms.transformers.validator.ValidationRule>
     <com.tenforce.lodms.transformers.validator.ValidationRule>
         <sparqlQuery>PREFIX dcterms: &lt;http://purl.org/dc/terms/&gt;
-            prefix dcat:&lt;http://www.w3.org/ns/dcat#&gt;
+            PREFIX dcat:&lt;http://www.w3.org/ns/dcat#&gt;
             SELECT
             ?s ?p ?o
             WHERE {
             ?s a dcat:Dataset.
             ?s dcterms:description ?o.
-            FILTER (!isLiteral(?o)).
+            FILTER(!isLiteral(?o))
             BIND(dcterms:description AS ?p).
-            }</sparqlQuery>
-        <description>dataset description should be a literal</description>
-        <message>description is not a literal</message>
+            }
+        </sparqlQuery>
+        <description>dcterms:description should be a literal</description>
+        <message>dcterms:description should be a literal</message>
         <severity>error</severity>
     </com.tenforce.lodms.transformers.validator.ValidationRule>
     <com.tenforce.lodms.transformers.validator.ValidationRule>
         <sparqlQuery>PREFIX dcterms: &lt;http://purl.org/dc/terms/&gt;
-            prefix dcat:&lt;http://www.w3.org/ns/dcat#&gt;
+            PREFIX dcat:&lt;http://www.w3.org/ns/dcat#&gt;
+            SELECT
+            ?s ?p ?o
+            WHERE {
+            ?s a dcat:Dataset.
+            FILTER(!(EXISTS { ?s dcterms:title ?title})).
+            BIND(rdf:type AS ?p).
+            BIND(dcat:Dataset AS ?o).
+            }
+        </sparqlQuery>
+        <description>dcterms:title is a required property for Dataset</description>
+        <message>dcterms:title is a required property for Dataset</message>
+        <severity>error</severity>
+    </com.tenforce.lodms.transformers.validator.ValidationRule>
+    <com.tenforce.lodms.transformers.validator.ValidationRule>
+        <sparqlQuery>PREFIX dcterms: &lt;http://purl.org/dc/terms/&gt;
+            PREFIX dcat:&lt;http://www.w3.org/ns/dcat#&gt;
             SELECT
             ?s ?p ?o
             WHERE {
             ?s a dcat:Dataset.
             ?s dcterms:title ?o.
-            FILTER (!isLiteral(?o)).
+            FILTER(!isLiteral(?o))
             BIND(dcterms:title AS ?p).
-            }</sparqlQuery>
-        <description>dataset title should be a literal</description>
-        <message>title is not a literal</message>
+            }
+        </sparqlQuery>
+        <description>dcterms:title should be a literal</description>
+        <message>dcterms:title should be a literal</message>
         <severity>error</severity>
     </com.tenforce.lodms.transformers.validator.ValidationRule>
     <com.tenforce.lodms.transformers.validator.ValidationRule>
         <sparqlQuery>PREFIX dcterms: &lt;http://purl.org/dc/terms/&gt;
-            prefix dcat:&lt;http://www.w3.org/ns/dcat#&gt;
+            PREFIX dcat:&lt;http://www.w3.org/ns/dcat#&gt;
+            PREFIX adms:&lt;http://www.w3.org/ns/adms#&gt;
             SELECT
             ?s ?p ?o
             WHERE {
             ?s a dcat:Dataset.
-            OPTIONAL {?s dcterms:title ?title}.
-            FILTER (!BOUND(?title)).
+            FILTER(!(EXISTS { ?s adms:contactPoint ?cPoint})).
             BIND(rdf:type AS ?p).
             BIND(dcat:Dataset AS ?o).
-            }</sparqlQuery>
-        <description>title is a required property for datasets</description>
-        <message>no title defined for this dataset</message>
+            }
+        </sparqlQuery>
+        <description>adms:contactPoint is a recommended property for Dataset</description>
+        <message>adms:contactPoint is a recommended property for Dataset</message>
+        <severity>warning</severity>
+    </com.tenforce.lodms.transformers.validator.ValidationRule>
+    <com.tenforce.lodms.transformers.validator.ValidationRule>
+        <sparqlQuery>PREFIX dcterms: &lt;http://purl.org/dc/terms/&gt;
+            PREFIX dcat:&lt;http://www.w3.org/ns/dcat#&gt;
+            PREFIX adms:&lt;http://www.w3.org/ns/adms#&gt;
+            SELECT
+            ?s ?p ?o
+            WHERE {
+            ?s a dcat:Dataset.
+            ?s adms:contactPoint ?o.
+            FILTER(!isUri(?o)).
+            BIND(adms:contactPoint AS ?p).
+            }
+        </sparqlQuery>
+        <description>adms:contactPoint should be a resource</description>
+        <message>adms:contactPoint should be a resource</message>
         <severity>error</severity>
     </com.tenforce.lodms.transformers.validator.ValidationRule>
     <com.tenforce.lodms.transformers.validator.ValidationRule>
         <sparqlQuery>PREFIX dcterms: &lt;http://purl.org/dc/terms/&gt;
-            prefix dcat:&lt;http://www.w3.org/ns/dcat#&gt;
-            SELECT
-            ?s ?p ?o
-            WHERE {
-            ?s ?p dcat:Dataset.
-            ?s rdf:type ?o.
-            ?s dcterms:publisher ?agent
-            } GROUP BY ?s HAVING (count(?agent) > 1)</sparqlQuery>
-        <description>a dataset should not have more than one publisher</description>
-        <message>dataset can only have one publisher</message>
-        <severity>warning</severity>
-    </com.tenforce.lodms.transformers.validator.ValidationRule>
-    <com.tenforce.lodms.transformers.validator.ValidationRule>
-        <sparqlQuery>PREFIX dcterms: &lt;http://purl.org/dc/terms/&gt;
-            prefix dcat:&lt;http://www.w3.org/ns/dcat#&gt;
+            PREFIX dcat:&lt;http://www.w3.org/ns/dcat#&gt;
+            PREFIX adms:&lt;http://www.w3.org/ns/adms#&gt;
             SELECT
             ?s ?p ?o
             WHERE {
             ?s a dcat:Dataset.
-            OPTIONAL {?s dcterms:publisher ?publisher}.
-            FILTER (!BOUND(?publisher)).
-            BIND(rdf:type AS ?p).
-            BIND(dcat:Dataset AS ?o).
-            }</sparqlQuery>
-        <description>publisher is a recommended property for datasets</description>
-        <message>no publisher defined for this dataset</message>
-        <severity>warning</severity>
-    </com.tenforce.lodms.transformers.validator.ValidationRule>
-    <com.tenforce.lodms.transformers.validator.ValidationRule>
-        <sparqlQuery>PREFIX dcterms: &lt;http://purl.org/dc/terms/&gt;
-            prefix dcat:&lt;http://www.w3.org/ns/dcat#&gt;
-            SELECT
-            ?s ?p ?o
-            WHERE {
-            ?s a dcat:Dataset.
-            OPTIONAL {?s dcat:keyword ?keyword}.
-            FILTER (!BOUND(?keyword)).
-            BIND(rdf:type AS ?p).
-            BIND(dcat:Dataset AS ?o).
-            }</sparqlQuery>
-        <description>keyword is a recommended property for datasets</description>
-        <message>no keyword defined for this dataset</message>
-        <severity>warning</severity>
-    </com.tenforce.lodms.transformers.validator.ValidationRule>
-    <com.tenforce.lodms.transformers.validator.ValidationRule>
-        <sparqlQuery>PREFIX dcterms: &lt;http://purl.org/dc/terms/&gt;
-            prefix dcat:&lt;http://www.w3.org/ns/dcat#&gt;
-            SELECT
-            ?s ?p ?o
-            WHERE {
-            ?s a dcat:Dataset.
-            OPTIONAL {?s dcat:theme ?theme}.
-            FILTER (!BOUND(?theme)).
-            BIND(rdf:type AS ?p).
-            BIND(dcat:Dataset AS ?o).
-            }</sparqlQuery>
-        <description>theme is a recommended property for datasets</description>
-        <message>no theme defined for this dataset</message>
-        <severity>warning</severity>
-    </com.tenforce.lodms.transformers.validator.ValidationRule>
-    <com.tenforce.lodms.transformers.validator.ValidationRule>
-        <sparqlQuery>PREFIX dcterms: &lt;http://purl.org/dc/terms/&gt;
-            prefix dcat:&lt;http://www.w3.org/ns/dcat#&gt;
-            SELECT
-            ?s ?p ?o
-            WHERE {
-            ?s a dcat:Dataset.
-            OPTIONAL {?s dcat:theme ?theme}.
-            FILTER (!BOUND(?theme)).
-            BIND(rdf:type AS ?p).
-            BIND(dcat:Dataset AS ?o).
-            }</sparqlQuery>
-        <description>distribution is a recommended property for datasets</description>
-        <message>no distribution defined for this dataset</message>
-        <severity>warning</severity>
-    </com.tenforce.lodms.transformers.validator.ValidationRule>
-    <com.tenforce.lodms.transformers.validator.ValidationRule>
-        <sparqlQuery>PREFIX adms:&lt;http://www.w3.org/ns/adms#&gt;
-            prefix dcat:&lt;http://www.w3.org/ns/dcat#&gt;
-            SELECT
-            ?s ?p ?o
-            WHERE {
-            ?s a dcat:Dataset.
-            OPTIONAL {?s adms:contactPoint ?cPoint}.
-            FILTER (!BOUND(?cPoint)).
-            BIND(rdf:type AS ?p).
-            BIND(dcat:Dataset AS ?o).
-            }</sparqlQuery>
-        <description>contactPoint is a recommended property for datasets</description>
-        <message>no contactPoint defined for this dataset</message>
-        <severity>warning</severity>
-    </com.tenforce.lodms.transformers.validator.ValidationRule>
-    <com.tenforce.lodms.transformers.validator.ValidationRule>
-        <sparqlQuery>prefix dcat:&lt;http://www.w3.org/ns/dcat#&gt;
-            SELECT
-            ?s ?p ?o
-            WHERE {
-            ?s a dcat:Distribution.
-            OPTIONAL {?s dcat:accessURL ?url}.
-            FILTER (!BOUND(?url)).
-            BIND(rdf:type AS ?p).
-            BIND(dcat:Dataset AS ?o).
-            }</sparqlQuery>
-        <description>access URL is a required property for distribution</description>
-        <message>no access URL defined for this distribution</message>
+            ?s adms:contactPoint ?o.
+            ?o ?pred ?val.
+            FILTER(!EXISTS {?o a &lt;http://www.w3.org/2006/vcard/ns#VCard&gt;}).
+            BIND(adms:contactPoint AS ?p).
+            }
+        </sparqlQuery>
+        <description>adms:contactPoint should be a vCard</description>
+        <message>adms:contactPoint should be a vCard</message>
         <severity>error</severity>
     </com.tenforce.lodms.transformers.validator.ValidationRule>
     <com.tenforce.lodms.transformers.validator.ValidationRule>
         <sparqlQuery>PREFIX dcterms: &lt;http://purl.org/dc/terms/&gt;
-            prefix dcat:&lt;http://www.w3.org/ns/dcat#&gt;
+            PREFIX dcat:&lt;http://www.w3.org/ns/dcat#&gt;
             SELECT
             ?s ?p ?o
             WHERE {
-            ?s a dcat:Distribution.
-            OPTIONAL {?s dcterms:description ?desc}.
-            FILTER (!BOUND(?desc)).
+            ?s a dcat:Dataset.
+            ?s dcat:distribution ?o.
+            FILTER(!isURI(?o)).
+            BIND(dcat:distribution AS ?p).
+            }
+        </sparqlQuery>
+        <description>dcat:distribution should be a resource</description>
+        <message>dcat:distribution should be a resource</message>
+        <severity>error</severity>
+    </com.tenforce.lodms.transformers.validator.ValidationRule>
+    <com.tenforce.lodms.transformers.validator.ValidationRule>
+        <sparqlQuery>PREFIX dcterms: &lt;http://purl.org/dc/terms/&gt;
+            PREFIX dcat:&lt;http://www.w3.org/ns/dcat#&gt;
+            SELECT
+            ?s ?p ?o
+            WHERE {
+            ?s a dcat:Dataset.
+            FILTER(!(EXISTS { ?s dcat:distribution ?dist})).
             BIND(rdf:type AS ?p).
             BIND(dcat:Dataset AS ?o).
-            }</sparqlQuery>
-        <description>description is a recommended property for distribution</description>
-        <message>no description defined for this distribution</message>
+            }
+        </sparqlQuery>
+        <description>dcat:distribution is a recommended property for Dataset</description>
+        <message>dcat:distribution is a recommended property for Dataset</message>
         <severity>warning</severity>
     </com.tenforce.lodms.transformers.validator.ValidationRule>
     <com.tenforce.lodms.transformers.validator.ValidationRule>
         <sparqlQuery>PREFIX dcterms: &lt;http://purl.org/dc/terms/&gt;
-            prefix dcat:&lt;http://www.w3.org/ns/dcat#&gt;
+            PREFIX dcat:&lt;http://www.w3.org/ns/dcat#&gt;
             SELECT
             ?s ?p ?o
             WHERE {
-            ?s a dcat:Distribution.
-            OPTIONAL {?s dcterms:format ?format}.
-            FILTER (!BOUND(?format)).
+            ?s a dcat:Dataset.
+            ?s dcat:distribution ?o.
+            ?o ?pred ?val.
+            FILTER(!EXISTS {?o a dcat:Distribution}).
+            BIND(dcat:distribution AS ?p).
+            }
+        </sparqlQuery>
+        <description>dcat:distribution should be a Distribution</description>
+        <message>dcat:distribution should be a Distribution</message>
+        <severity>error</severity>
+    </com.tenforce.lodms.transformers.validator.ValidationRule>
+    <com.tenforce.lodms.transformers.validator.ValidationRule>
+        <sparqlQuery>PREFIX dcterms: &lt;http://purl.org/dc/terms/&gt;
+            PREFIX dcat:&lt;http://www.w3.org/ns/dcat#&gt;
+            SELECT
+            ?s ?p ?o
+            WHERE {
+            ?s a dcat:Dataset.
+            FILTER(!(EXISTS { ?s dcat:keyword ?key})).
             BIND(rdf:type AS ?p).
             BIND(dcat:Dataset AS ?o).
-            }</sparqlQuery>
-        <description>format is a recommended property for distribution</description>
-        <message>no format defined for this distribution</message>
+            }
+        </sparqlQuery>
+        <description>dcat:keyword is a recommended property for Dataset</description>
+        <message>dcat:keyword is a recommended property for Dataset</message>
         <severity>warning</severity>
     </com.tenforce.lodms.transformers.validator.ValidationRule>
     <com.tenforce.lodms.transformers.validator.ValidationRule>
         <sparqlQuery>PREFIX dcterms: &lt;http://purl.org/dc/terms/&gt;
-            prefix dcat:&lt;http://www.w3.org/ns/dcat#&gt;
+            PREFIX dcat:&lt;http://www.w3.org/ns/dcat#&gt;
             SELECT
             ?s ?p ?o
             WHERE {
-            ?s a dcat:Distribution.
-            OPTIONAL {?s dcterms:license ?license}.
-            FILTER (!BOUND(?license)).
+            ?s a dcat:Dataset.
+            ?s dcat:keyword ?o.
+            FILTER(!isLiteral(?o)).
+            BIND(dcat:keyword AS ?p).
+            }
+        </sparqlQuery>
+        <description>dcat:keyword should be a literal</description>
+        <message>dcat:keyword should be a literal</message>
+        <severity>error</severity>
+    </com.tenforce.lodms.transformers.validator.ValidationRule>
+    <com.tenforce.lodms.transformers.validator.ValidationRule>
+        <sparqlQuery>PREFIX dcterms: &lt;http://purl.org/dc/terms/&gt;
+            PREFIX dcat:&lt;http://www.w3.org/ns/dcat#&gt;
+            SELECT
+            ?s ?p ?o
+            WHERE {
+            ?s a dcat:Dataset.
+            FILTER(!(EXISTS { ?s dcterms:publisher ?pub})).
             BIND(rdf:type AS ?p).
             BIND(dcat:Dataset AS ?o).
-            }</sparqlQuery>
-        <description>format is a recommended property for distribution</description>
-        <message>no format defined for this distribution</message>
+            }
+        </sparqlQuery>
+        <description>dcterms:publisher is a recommended property for Dataset</description>
+        <message>dcterms:publisher is a recommended property for Dataset</message>
         <severity>warning</severity>
     </com.tenforce.lodms.transformers.validator.ValidationRule>
     <com.tenforce.lodms.transformers.validator.ValidationRule>
         <sparqlQuery>PREFIX dcterms: &lt;http://purl.org/dc/terms/&gt;
-            prefix dcat:&lt;http://www.w3.org/ns/dcat#&gt;
+            PREFIX dcat:&lt;http://www.w3.org/ns/dcat#&gt;
             SELECT
-            ?s sample(?p) sample(?o)
+            ?s (rdf:type AS ?p) (dcat:Dataset AS ?o)
+            WHERE {
+            ?s a dcat:Dataset.
+            ?s dcterms:publisher ?pub.
+            } GROUP BY ?s HAVING(COUNT(?pub > 1))
+        </sparqlQuery>
+        <description>dcterms:publisher has maximum cardinality of 1 for Dataset</description>
+        <message>dcterms:publisher has maximum cardinality of 1 for Dataset</message>
+        <severity>warning</severity>
+    </com.tenforce.lodms.transformers.validator.ValidationRule>
+    <com.tenforce.lodms.transformers.validator.ValidationRule>
+        <sparqlQuery>PREFIX dcterms: &lt;http://purl.org/dc/terms/&gt;
+            PREFIX dcat:&lt;http://www.w3.org/ns/dcat#&gt;
+            SELECT
+            ?s (dcterms:publisher as ?p) ?o
+            WHERE {
+            ?s a dcat:Dataset.
+            ?s dcterms:publisher ?o.
+            FILTER(!isURI(?o)).
+            }
+        </sparqlQuery>
+        <description>dcterms:publisher has maximum cardinality of 1 for Dataset</description>
+        <message>dcterms:publisher has maximum cardinality of 1 for Dataset</message>
+        <severity>error</severity>
+    </com.tenforce.lodms.transformers.validator.ValidationRule>
+    <com.tenforce.lodms.transformers.validator.ValidationRule>
+        <sparqlQuery>PREFIX dcterms: &lt;http://purl.org/dc/terms/&gt;
+            PREFIX dcat:&lt;http://www.w3.org/ns/dcat#&gt;
+            PREFIX foaf:&lt;http://xmlns.com/foaf/0.1/&gt;
+            SELECT
+            ?s (dcterms:publisher as ?p) ?o
+            WHERE {
+            ?s a dcat:Dataset.
+            ?s dcterms:publisher ?o.
+            ?o ?pred ?val.
+            FILTER(!EXISTS {?o a foaf:Agent}).
+            }
+        </sparqlQuery>
+        <description>dcterms:publisher should be a foaf:Agent</description>
+        <message>dcterms:publisher should be a foaf:Agent</message>
+        <severity>error</severity>
+    </com.tenforce.lodms.transformers.validator.ValidationRule>
+    <com.tenforce.lodms.transformers.validator.ValidationRule>
+        <sparqlQuery>PREFIX dcterms: &lt;http://purl.org/dc/terms/&gt;
+            PREFIX dcat:&lt;http://www.w3.org/ns/dcat#&gt;
+            SELECT
+            ?s ?p ?o
+            WHERE {
+            ?s a dcat:Dataset.
+            FILTER(!(EXISTS { ?s dcat:theme ?theme})).
+            BIND(rdf:type AS ?p).
+            BIND(dcat:Dataset AS ?o).
+            }
+        </sparqlQuery>
+        <description>dcat:theme is a recommended property for Dataset</description>
+        <message>dcat:theme is a recommended property for Dataset</message>
+        <severity>warning</severity>
+    </com.tenforce.lodms.transformers.validator.ValidationRule>
+    <com.tenforce.lodms.transformers.validator.ValidationRule>
+        <sparqlQuery>PREFIX dcterms: &lt;http://purl.org/dc/terms/&gt;
+            PREFIX dcat:&lt;http://www.w3.org/ns/dcat#&gt;
+            SELECT
+            ?s ?p ?o
+            WHERE {
+            ?s a dcat:Dataset.
+            ?s dcat:theme ?o.
+            FILTER(!isURI(?o)).
+            BIND(dcat:theme AS ?p).
+            }
+        </sparqlQuery>
+        <description>dcat:theme should be a resource</description>
+        <message>dcat:theme should be a resource</message>
+        <severity>error</severity>
+    </com.tenforce.lodms.transformers.validator.ValidationRule>
+    <com.tenforce.lodms.transformers.validator.ValidationRule>
+        <sparqlQuery>PREFIX dcterms: &lt;http://purl.org/dc/terms/&gt;
+            PREFIX dcat:&lt;http://www.w3.org/ns/dcat#&gt;
+            SELECT
+            ?s ?p ?o
+            WHERE {
+            ?s a dcat:Dataset.
+            ?s dcterms:conformsTo ?o.
+            FILTER(!isURI(?o)).
+            BIND(dcterms:conformsTo AS ?p).
+            }
+        </sparqlQuery>
+        <description>dcterms:conformsTo should be a resource</description>
+        <message>dcterms:conformsTo should be a resource</message>
+        <severity>error</severity>
+    </com.tenforce.lodms.transformers.validator.ValidationRule>
+    <com.tenforce.lodms.transformers.validator.ValidationRule>
+        <sparqlQuery>PREFIX dcterms: &lt;http://purl.org/dc/terms/&gt;
+            PREFIX dcat:&lt;http://www.w3.org/ns/dcat#&gt;
+            PREFIX foaf:&lt;http://xmlns.com/foaf/0.1/&gt;
+            SELECT
+            ?s (dcterms:publisher as ?p) ?o
+            WHERE {
+            ?s a dcat:Dataset.
+            ?s dcterms:publisher ?o.
+            ?o ?pred ?val.
+            FILTER(!EXISTS {?o a dcterms:Standard}).
+            }
+        </sparqlQuery>
+        <description>dcterms:conformsTo should be a dcterms:Standard</description>
+        <message>dcterms:conformsTo should be a dcterms:Standard</message>
+        <severity>error</severity>
+    </com.tenforce.lodms.transformers.validator.ValidationRule>
+    <com.tenforce.lodms.transformers.validator.ValidationRule>
+        <sparqlQuery>PREFIX dcterms: &lt;http://purl.org/dc/terms/&gt;
+            PREFIX dcat:&lt;http://www.w3.org/ns/dcat#&gt;
+            SELECT
+            ?s ?p ?o
+            WHERE {
+            ?s a dcat:Dataset.
+            ?s dcterms:accrualPeriodicity ?o.
+            FILTER(!isURI(?o)).
+            BIND(dcterms:accrualPeriodicity AS ?p).
+            }
+        </sparqlQuery>
+        <description>dcterms:accrualPeriodicity should be a resource</description>
+        <message>dcterms:accrualPeriodicity should be a resource</message>
+        <severity>error</severity>
+    </com.tenforce.lodms.transformers.validator.ValidationRule>
+    <com.tenforce.lodms.transformers.validator.ValidationRule>
+        <sparqlQuery>PREFIX dcterms: &lt;http://purl.org/dc/terms/&gt;
+            PREFIX dcat:&lt;http://www.w3.org/ns/dcat#&gt;
+            PREFIX foaf:&lt;http://xmlns.com/foaf/0.1/&gt;
+            SELECT
+            ?s (dcterms:accrualPeriodicity as ?p) ?o
+            WHERE {
+            ?s a dcat:Dataset.
+            ?s dcterms:accrualPeriodicity ?o.
+            ?o ?pred ?val.
+            FILTER(!EXISTS {?o a dcterms:Frequency}).
+            }
+        </sparqlQuery>
+        <description>dcterms:accrualPeriodicity should be a dcterms:Frequency</description>
+        <message>dcterms:accrualPeriodicity should be a dcterms:Frequency</message>
+        <severity>error</severity>
+    </com.tenforce.lodms.transformers.validator.ValidationRule>
+    <com.tenforce.lodms.transformers.validator.ValidationRule>
+        <sparqlQuery>PREFIX dcterms: &lt;http://purl.org/dc/terms/&gt;
+            PREFIX dcat:&lt;http://www.w3.org/ns/dcat#&gt;
+            SELECT
+            ?s (rdf:type AS ?p) (dcat:Dataset AS ?o)
+            WHERE {
+            ?s a dcat:Dataset.
+            ?s dcterms:accrualPeriodicity ?period.
+            } GROUP BY ?s HAVING(COUNT(?period > 1))
+        </sparqlQuery>
+        <description>dcterms:accrualPeriodicity has maximum cardinality of 1 for Dataset</description>
+        <message>dcterms:accrualPeriodicity has maximum cardinality of 1 for Dataset</message>
+        <severity>error</severity>
+    </com.tenforce.lodms.transformers.validator.ValidationRule>
+    <com.tenforce.lodms.transformers.validator.ValidationRule>
+        <sparqlQuery>PREFIX dcterms: &lt;http://purl.org/dc/terms/&gt;
+            PREFIX dcat:&lt;http://www.w3.org/ns/dcat#&gt;
+            SELECT
+            ?s ?p ?o
+            WHERE {
+            ?s a dcat:Dataset.
+            ?s dcterms:identifier ?o.
+            FILTER(!isLiteral(?o)).
+            BIND(dcterms:identifier AS ?p).
+            }
+        </sparqlQuery>
+        <description>dcterms:identifier should be a literal</description>
+        <message>dcterms:identifier should be a literal</message>
+        <severity>error</severity>
+    </com.tenforce.lodms.transformers.validator.ValidationRule>
+    <com.tenforce.lodms.transformers.validator.ValidationRule>
+        <sparqlQuery>PREFIX dcterms: &lt;http://purl.org/dc/terms/&gt;
+            PREFIX dcat:&lt;http://www.w3.org/ns/dcat#&gt;
+            SELECT
+            ?s ?p ?o
+            WHERE {
+            ?s a dcat:Dataset.
+            ?s dcat:landingPage ?o.
+            FILTER(!isURI(?o)).
+            BIND(dcat:landingPage AS ?p).
+            }
+        </sparqlQuery>
+        <description>dcat:landingPage should be a resource</description>
+        <message>dcat:landingPage should be a resource</message>
+        <severity>error</severity>
+    </com.tenforce.lodms.transformers.validator.ValidationRule>
+    <com.tenforce.lodms.transformers.validator.ValidationRule>
+        <sparqlQuery>PREFIX dcterms: &lt;http://purl.org/dc/terms/&gt;
+            PREFIX dcat:&lt;http://www.w3.org/ns/dcat#&gt;
+            SELECT
+            ?s (rdf:type AS ?p) (dcat:Dataset AS ?o)
+            WHERE {
+            ?s a dcat:Dataset.
+            ?s dcat:landingPage ?page.
+            } GROUP BY ?s HAVING(COUNT(?page > 1))
+        </sparqlQuery>
+        <description>dcat:landingPage has maximum cardinality of 1 for Dataset</description>
+        <message>dcat:landingPage has maximum cardinality of 1 for Dataset</message>
+        <severity>error</severity>
+    </com.tenforce.lodms.transformers.validator.ValidationRule>
+    <com.tenforce.lodms.transformers.validator.ValidationRule>
+        <sparqlQuery>PREFIX dcterms: &lt;http://purl.org/dc/terms/&gt;
+            PREFIX dcat:&lt;http://www.w3.org/ns/dcat#&gt;
+            PREFIX foaf:&lt;http://xmlns.com/foaf/0.1/&gt;
+            SELECT
+            ?s (dcat:landingPage as ?p) ?o
+            WHERE {
+            ?s a dcat:Dataset.
+            ?s dcat:landingPage ?o.
+            ?o ?pred ?val.
+            FILTER(!EXISTS {?o a foaf:Document}).
+            }
+        </sparqlQuery>
+        <description>dcat:landingPage should be a foaf:Document</description>
+        <message>dcat:landingPage should be a foaf:Document</message>
+        <severity>error</severity>
+    </com.tenforce.lodms.transformers.validator.ValidationRule>
+    <com.tenforce.lodms.transformers.validator.ValidationRule>
+        <sparqlQuery>PREFIX dcterms: &lt;http://purl.org/dc/terms/&gt;
+            PREFIX dcat:&lt;http://www.w3.org/ns/dcat#&gt;
+            SELECT
+            ?s ?p ?o
+            WHERE {
+            ?s a dcat:Dataset.
+            ?s dcterms:language ?o.
+            FILTER(!isURI(?o)).
+            BIND(dcterms:language AS ?p).
+            }
+        </sparqlQuery>
+        <description>dcterm:language should be a resource</description>
+        <message>dcterm:language should be a resource</message>
+        <severity>error</severity>
+    </com.tenforce.lodms.transformers.validator.ValidationRule>
+    <com.tenforce.lodms.transformers.validator.ValidationRule>
+        <sparqlQuery>PREFIX dcterms: &lt;http://purl.org/dc/terms/&gt;
+            PREFIX dcat:&lt;http://www.w3.org/ns/dcat#&gt;
+            PREFIX foaf:&lt;http://xmlns.com/foaf/0.1/&gt;
+            SELECT
+            ?s (dcterms:language as ?p) ?o
+            WHERE {
+            ?s a dcat:Dataset.
+            ?s dcterms:language ?o.
+            ?o ?pred ?val.
+            FILTER(!EXISTS {?o a dcterms:LinguisticSystem}).
+            }
+        </sparqlQuery>
+        <description>dcterms:language should be a dcterms:LinguisticSystem</description>
+        <message>dcterms:language should be a dcterms:LinguisticSystem</message>
+        <severity>error</severity>
+    </com.tenforce.lodms.transformers.validator.ValidationRule>
+    <com.tenforce.lodms.transformers.validator.ValidationRule>
+        <sparqlQuery>prefix adms:&lt;http://www.w3.org/ns/adms#&gt;
+            PREFIX dcat:&lt;http://www.w3.org/ns/dcat#&gt;
+            SELECT
+            ?s ?p ?o
+            WHERE {
+            ?s a dcat:Dataset.
+            ?s adms:version ?o.
+            FILTER(!isURI(?o)).
+            BIND(adms:versionNotes AS ?p).
+            }
+        </sparqlQuery>
+        <description>adms:identifier should be a resource</description>
+        <message>adms:identifier should be a resource</message>
+        <severity>error</severity>
+    </com.tenforce.lodms.transformers.validator.ValidationRule>
+    <com.tenforce.lodms.transformers.validator.ValidationRule>
+        <sparqlQuery>PREFIX dcterms: &lt;http://purl.org/dc/terms/&gt;
+            PREFIX dcat:&lt;http://www.w3.org/ns/dcat#&gt;
+            prefix adms:&lt;http://www.w3.org/ns/adms#&gt;
+            SELECT
+            ?s (adms:identifier as ?p) ?o
+            WHERE {
+            ?s a dcat:Dataset.
+            ?s adms:identifier ?o.
+            ?o ?pred ?val.
+            FILTER(!EXISTS {?o a adms:Identifier}).
+            }
+        </sparqlQuery>
+        <description>adms:identifier should be a adms:Identifier</description>
+        <message>adms:identifier should be a adms:Identifier</message>
+        <severity>error</severity>
+    </com.tenforce.lodms.transformers.validator.ValidationRule>
+    <com.tenforce.lodms.transformers.validator.ValidationRule>
+        <sparqlQuery>PREFIX dcterms: &lt;http://purl.org/dc/terms/&gt;
+            PREFIX dcat:&lt;http://www.w3.org/ns/dcat#&gt;
+            SELECT
+            ?s ?p ?o
+            WHERE {
+            ?s a dcat:Dataset.
+            ?s dcterms:issued ?o.
+            FILTER(!isLiteral(?o)).
+            BIND(dcterms:issued AS ?p).
+            }
+        </sparqlQuery>
+        <description>dcterms:issued should be literal</description>
+        <message>dcterms:issued should be literal</message>
+        <severity>error</severity>
+    </com.tenforce.lodms.transformers.validator.ValidationRule>
+    <com.tenforce.lodms.transformers.validator.ValidationRule>
+        <sparqlQuery>PREFIX dcterms: &lt;http://purl.org/dc/terms/&gt;
+            PREFIX dcat:&lt;http://www.w3.org/ns/dcat#&gt;
+            SELECT
+            ?s (rdf:type AS ?p) (dcat:Dataset AS ?o)
+            WHERE {
+            ?s a dcat:Dataset.
+            ?s dcterms:issued ?issued.
+            } GROUP BY ?s HAVING(COUNT(?issued > 1))
+        </sparqlQuery>
+        <description>dcterms:issued has maximum cardinality of 1 for Dataset</description>
+        <message>dcterms:issued has maximum cardinality of 1 for Dataset</message>
+        <severity>error</severity>
+    </com.tenforce.lodms.transformers.validator.ValidationRule>
+    <com.tenforce.lodms.transformers.validator.ValidationRule>
+        <sparqlQuery>PREFIX dcterms: &lt;http://purl.org/dc/terms/&gt;
+            PREFIX dcat:&lt;http://www.w3.org/ns/dcat#&gt;
+            SELECT
+            ?s ?p ?o
+            WHERE {
+            ?s a dcat:Dataset.
+            ?s dcterms:spatial ?o.
+            FILTER(!isURI(?o)).
+            BIND(dcterms:spatial AS ?p).
+            }
+        </sparqlQuery>
+        <description>dcterms:spatial should be resource</description>
+        <message>dcterms:spatial should be resource</message>
+        <severity>error</severity>
+    </com.tenforce.lodms.transformers.validator.ValidationRule>
+    <com.tenforce.lodms.transformers.validator.ValidationRule>
+        <sparqlQuery>PREFIX dcterms: &lt;http://purl.org/dc/terms/&gt;
+            PREFIX dcat:&lt;http://www.w3.org/ns/dcat#&gt;
+            PREFIX foaf:&lt;http://xmlns.com/foaf/0.1/&gt;
+            SELECT
+            ?s (dcterms:spatial as ?p) ?o
+            WHERE {
+            ?s a dcat:Dataset.
+            ?s dcterms:spatial ?o.
+            ?o ?pred ?val.
+            FILTER(!EXISTS {?o a dcterms:Location}).
+            }
+        </sparqlQuery>
+        <description>dcterms:spatial should be a dcterms:Location</description>
+        <message>dcterms:spatial should be a dcterms:Location</message>
+        <severity>error</severity>
+    </com.tenforce.lodms.transformers.validator.ValidationRule>
+    <com.tenforce.lodms.transformers.validator.ValidationRule>
+        <sparqlQuery>PREFIX dcterms: &lt;http://purl.org/dc/terms/&gt;
+            PREFIX dcat:&lt;http://www.w3.org/ns/dcat#&gt;
+            SELECT
+            ?s ?p ?o
+            WHERE {
+            ?s a dcat:Dataset.
+            ?s dcterms:temporal ?o.
+            FILTER(!isURI(?o)).
+            BIND(dcterms:temporal AS ?p).
+            }
+        </sparqlQuery>
+        <description>dcterms:temporal should be resource</description>
+        <message>dcterms:temporal should be resource</message>
+        <severity>error</severity>
+    </com.tenforce.lodms.transformers.validator.ValidationRule>
+    <com.tenforce.lodms.transformers.validator.ValidationRule>
+        <sparqlQuery>PREFIX dcterms: &lt;http://purl.org/dc/terms/&gt;
+            PREFIX dcat:&lt;http://www.w3.org/ns/dcat#&gt;
+            PREFIX foaf:&lt;http://xmlns.com/foaf/0.1/&gt;
+            SELECT
+            ?s (dcterms:temporal as ?p) ?o
+            WHERE {
+            ?s a dcat:Dataset.
+            ?s dcterms:temporal ?o.
+            ?o ?pred ?val.
+            FILTER(!EXISTS {?o a dcterms:PeriodOfTime}).
+            }
+        </sparqlQuery>
+        <description>dcterms:temporal should be a dcterms:PeriodOfTime</description>
+        <message>dcterms:temporal should be a dcterms:PeriodOfTime</message>
+        <severity>error</severity>
+    </com.tenforce.lodms.transformers.validator.ValidationRule>
+    <com.tenforce.lodms.transformers.validator.ValidationRule>
+        <sparqlQuery>PREFIX dcterms: &lt;http://purl.org/dc/terms/&gt;
+            PREFIX dcat:&lt;http://www.w3.org/ns/dcat#&gt;
+            SELECT
+            ?s ?p ?o
+            WHERE {
+            ?s a dcat:Dataset.
+            ?s dcterms:modified ?o.
+            FILTER(!isLiteral(?o)).
+            BIND(dcterms:modified AS ?p).
+            }
+        </sparqlQuery>
+        <description>dcterms:modified should be a literal</description>
+        <message>dcterms:modified should be a literal</message>
+        <severity>error</severity>
+    </com.tenforce.lodms.transformers.validator.ValidationRule>
+    <com.tenforce.lodms.transformers.validator.ValidationRule>
+        <sparqlQuery>PREFIX dcterms: &lt;http://purl.org/dc/terms/&gt;
+            PREFIX dcat:&lt;http://www.w3.org/ns/dcat#&gt;
+            SELECT
+            ?s (rdf:type AS ?p) (dcat:Dataset AS ?o)
+            WHERE {
+            ?s a dcat:Dataset.
+            ?s dcterms:modified ?modified.
+            } GROUP BY ?s HAVING(COUNT(?modified > 1))
+        </sparqlQuery>
+        <description>dcterms:modified has maximum cardinality of 1 for Dataset</description>
+        <message>dcterms:modified has maximum cardinality of 1 for Dataset</message>
+        <severity>error</severity>
+    </com.tenforce.lodms.transformers.validator.ValidationRule>
+    <com.tenforce.lodms.transformers.validator.ValidationRule>
+        <sparqlQuery>prefix adms:&lt;http://www.w3.org/ns/adms#&gt;
+            PREFIX dcat:&lt;http://www.w3.org/ns/dcat#&gt;
+            SELECT
+            ?s (rdf:type AS ?p) (dcat:Dataset AS ?o)
+            WHERE {
+            ?s a dcat:Dataset.
+            ?s adms:version ?version.
+            } GROUP BY ?s HAVING(COUNT(?version > 1))
+        </sparqlQuery>
+        <description>adms:version has maximum cardinality of 1 for Dataset</description>
+        <message>adms:version has maximum cardinality of 1 for Dataset</message>
+        <severity>error</severity>
+    </com.tenforce.lodms.transformers.validator.ValidationRule>
+    <com.tenforce.lodms.transformers.validator.ValidationRule>
+        <sparqlQuery>prefix adms:&lt;http://www.w3.org/ns/adms#&gt;
+            PREFIX dcat:&lt;http://www.w3.org/ns/dcat#&gt;
+            SELECT
+            ?s ?p ?o
+            WHERE {
+            ?s a dcat:Dataset.
+            ?s adms:version ?o.
+            FILTER(!isLiteral(?o)).
+            BIND(adms:version AS ?p).
+            }
+        </sparqlQuery>
+        <description>adms:version should be a literal</description>
+        <message>adms:version should be a literal</message>
+        <severity>error</severity>
+    </com.tenforce.lodms.transformers.validator.ValidationRule>
+    <com.tenforce.lodms.transformers.validator.ValidationRule>
+        <sparqlQuery>prefix adms:&lt;http://www.w3.org/ns/adms#&gt;
+            PREFIX dcat:&lt;http://www.w3.org/ns/dcat#&gt;
+            SELECT
+            ?s ?p ?o
+            WHERE {
+            ?s a dcat:Dataset.
+            ?s adms:version ?o.
+            FILTER(!isLiteral(?o)).
+            BIND(adms:versionNotes AS ?p).
+            }
+        </sparqlQuery>
+        <description>adms:versionNotes should be literal</description>
+        <message>adms:versionNotes should be literal</message>
+        <severity>error</severity>
+    </com.tenforce.lodms.transformers.validator.ValidationRule>
+    <com.tenforce.lodms.transformers.validator.ValidationRule>
+        <sparqlQuery>prefix adms:&lt;http://www.w3.org/ns/adms#&gt;
+            PREFIX dcat:&lt;http://www.w3.org/ns/dcat#&gt;
+            SELECT
+            ?s (rdf:type AS ?p) (dcat:Dataset AS ?o)
+            WHERE {
+            ?s a dcat:Dataset.
+            ?s adms:versionNotes ?versionNotes.
+            } GROUP BY ?s HAVING(COUNT(?versionNotes > 1))
+        </sparqlQuery>
+        <description>adms:versionNotes has maximum cardinality of 1 for Dataset</description>
+        <message>adms:versionNotes has maximum cardinality of 1 for Dataset</message>
+        <severity>error</severity>
+    </com.tenforce.lodms.transformers.validator.ValidationRule>
+    <com.tenforce.lodms.transformers.validator.ValidationRule>
+        <sparqlQuery>PREFIX dcterms: &lt;http://purl.org/dc/terms/&gt;
+            PREFIX dcat:&lt;http://www.w3.org/ns/dcat#&gt;
+            SELECT
+            ?s ?p ?o
+            WHERE {
+            ?s a dcat:Distribution.
+            FILTER(!(EXISTS { ?s dcat:accessURL ?desc})).
+            BIND(rdf:type AS ?p).
+            BIND(dcat:Distribution AS ?o).
+            }
+        </sparqlQuery>
+        <description>dcat:accessURL is a required property for Distribution</description>
+        <message>dcat:accessURL is a required property for Dataset</message>
+        <severity>error</severity>
+    </com.tenforce.lodms.transformers.validator.ValidationRule>
+    <com.tenforce.lodms.transformers.validator.ValidationRule>
+        <sparqlQuery>PREFIX dcterms: &lt;http://purl.org/dc/terms/&gt;
+            PREFIX dcat:&lt;http://www.w3.org/ns/dcat#&gt;
+            SELECT
+            ?s ?p ?o
+            WHERE {
+            ?s a dcat:Distribution.
+            ?s dcat:accessURL ?o.
+            FILTER(!isURI(?o))
+            BIND(dcat:accessURL AS ?p).
+            }
+        </sparqlQuery>
+        <description>dcat:accessURL should be a resource</description>
+        <message>dcat:accessURL should be a resource</message>
+        <severity>error</severity>
+    </com.tenforce.lodms.transformers.validator.ValidationRule>
+    <com.tenforce.lodms.transformers.validator.ValidationRule>
+        <sparqlQuery>PREFIX dcterms: &lt;http://purl.org/dc/terms/&gt;
+            PREFIX dcat:&lt;http://www.w3.org/ns/dcat#&gt;
+            SELECT
+            ?s ?p ?o
+            WHERE {
+            ?s a dcat:Distribution.
+            FILTER(!(EXISTS { ?s dcterms:description ?desc})).
+            BIND(rdf:type AS ?p).
+            BIND(dcat:Distribution AS ?o).
+            }
+        </sparqlQuery>
+        <description>dcterms:description is a recommended property for Distribution</description>
+        <message>dcterms:description is a recommended property for Distribution</message>
+        <severity>warning</severity>
+    </com.tenforce.lodms.transformers.validator.ValidationRule>
+    <com.tenforce.lodms.transformers.validator.ValidationRule>
+        <sparqlQuery>PREFIX dcterms: &lt;http://purl.org/dc/terms/&gt;
+            PREFIX dcat:&lt;http://www.w3.org/ns/dcat#&gt;
+            SELECT
+            ?s ?p ?o
+            WHERE {
+            ?s a dcat:Distribution.
+            ?s dcterms:description ?o.
+            FILTER(!isLiteral(?o))
+            BIND(dcterms:description AS ?p).
+            }
+        </sparqlQuery>
+        <description>dcterms:description should be a literal</description>
+        <message>dcterms:description should be a literal</message>
+        <severity>error</severity>
+    </com.tenforce.lodms.transformers.validator.ValidationRule>
+    <com.tenforce.lodms.transformers.validator.ValidationRule>
+        <sparqlQuery>PREFIX dcterms: &lt;http://purl.org/dc/terms/&gt;
+            PREFIX dcat:&lt;http://www.w3.org/ns/dcat#&gt;
+            SELECT
+            ?s ?p ?o
+            WHERE {
+            ?s a dcat:Distribution.
+            FILTER(!(EXISTS { ?s dcterms:format ?desc})).
+            BIND(rdf:type AS ?p).
+            BIND(dcat:Distribution AS ?o).
+            }
+        </sparqlQuery>
+        <description>dcterms:format is a recommended property for Distribution</description>
+        <message>dcterms:format is a recommended property for Distribution</message>
+        <severity>warning</severity>
+    </com.tenforce.lodms.transformers.validator.ValidationRule>
+    <com.tenforce.lodms.transformers.validator.ValidationRule>
+        <sparqlQuery>PREFIX dcterms: &lt;http://purl.org/dc/terms/&gt;
+            PREFIX dcat:&lt;http://www.w3.org/ns/dcat#&gt;
+            SELECT
+            ?s ?p ?o
+            WHERE {
+            ?s a dcat:Distribution.
+            ?s dcterms:format ?o.
+            FILTER(!isURI(?o))
+            BIND(dcterms:format AS ?p).
+            }
+        </sparqlQuery>
+        <description>dcterms:format should be a resource</description>
+        <message>dcterms:format should be a resource</message>
+        <severity>error</severity>
+    </com.tenforce.lodms.transformers.validator.ValidationRule>
+    <com.tenforce.lodms.transformers.validator.ValidationRule>
+        <sparqlQuery>PREFIX dcterms: &lt;http://purl.org/dc/terms/&gt;
+            PREFIX dcat:&lt;http://www.w3.org/ns/dcat#&gt;
+            SELECT ?s (rdf:type as ?p) (dcat:Distribution as ?o)
             WHERE {
             ?s rdf:type dcat:Distribution.
-            ?s ?p ?o.
             ?s dcterms:format ?o
-            } GROUP BY ?s HAVING (count(?agent) > 1)</sparqlQuery>
-        <description>a distribution should not have more than one format</description>
-        <message>distribution can only have one format</message>
+            } GROUP BY ?s HAVING (count(?o) > 1)
+        </sparqlQuery>
+        <description>dcterms:format has a maximum cardinality of 1</description>
+        <message>dcterms:format has a maximum cardinality of 1</message>
         <severity>warning</severity>
     </com.tenforce.lodms.transformers.validator.ValidationRule>
     <com.tenforce.lodms.transformers.validator.ValidationRule>
         <sparqlQuery>PREFIX dcterms: &lt;http://purl.org/dc/terms/&gt;
-            prefix dcat:&lt;http://www.w3.org/ns/dcat#&gt;
+            PREFIX dcat:&lt;http://www.w3.org/ns/dcat#&gt;
             SELECT
-            ?s sample(?p) sample(?o)
+            ?s ?p ?o
+            WHERE {
+            ?s a dcat:Distribution.
+            FILTER(!(EXISTS { ?s dcterms:license ?desc})).
+            BIND(rdf:type AS ?p).
+            BIND(dcat:Distribution AS ?o).
+            }
+        </sparqlQuery>
+        <description>dcterms:license is a recommended property for Distribution</description>
+        <message>dcterms:license is a recommended property for Distribution</message>
+        <severity>warning</severity>
+    </com.tenforce.lodms.transformers.validator.ValidationRule>
+    <com.tenforce.lodms.transformers.validator.ValidationRule>
+        <sparqlQuery>PREFIX dcterms: &lt;http://purl.org/dc/terms/&gt;
+            PREFIX dcat:&lt;http://www.w3.org/ns/dcat#&gt;
+            SELECT
+            ?s ?p ?o
+            WHERE {
+            ?s a dcat:Distribution.
+            ?s dcterms:license ?o.
+            FILTER(!isURI(?o))
+            BIND(dcat:accessURL AS ?p).
+            }
+        </sparqlQuery>
+        <description>dcterms:license should be a resource</description>
+        <message>dcterms:license should be a resource</message>
+        <severity>error</severity>
+    </com.tenforce.lodms.transformers.validator.ValidationRule>
+    <com.tenforce.lodms.transformers.validator.ValidationRule>
+        <sparqlQuery>PREFIX dcterms: &lt;http://purl.org/dc/terms/&gt;
+            PREFIX dcat:&lt;http://www.w3.org/ns/dcat#&gt;
+            SELECT ?s (rdf:type as ?p) (dcat:Distribution as ?o)
             WHERE {
             ?s rdf:type dcat:Distribution.
-            ?s ?p ?o.
             ?s dcterms:license ?o
-            } GROUP BY ?s HAVING (count(?o) > 1)</sparqlQuery>
-        <description>a distribution should not have more than one license</description>
-        <message>distribution can only have one license</message>
+            } GROUP BY ?s HAVING (count(?o) > 1)
+        </sparqlQuery>
+        <description>dcterms:license has a maximum cardinality of 1</description>
+        <message>dcterms:license has a maximum cardinality of 1</message>
+        <severity>error</severity>
+    </com.tenforce.lodms.transformers.validator.ValidationRule>
+    <com.tenforce.lodms.transformers.validator.ValidationRule>
+        <sparqlQuery>PREFIX dcterms: &lt;http://purl.org/dc/terms/&gt;
+            PREFIX dcat:&lt;http://www.w3.org/ns/dcat#&gt;
+            SELECT
+            ?s ?p ?o
+            WHERE {
+            ?s a dcat:Distribution.
+            ?s dcterms:byteSize ?o.
+            FILTER(!isLiteral(?o))
+            BIND(dcterms:byteSize AS ?p).
+            }
+        </sparqlQuery>
+        <description>dcterms:byteSize should be a literal</description>
+        <message>dcterms:byteSize should be a literal</message>
+        <severity>error</severity>
+    </com.tenforce.lodms.transformers.validator.ValidationRule>
+    <com.tenforce.lodms.transformers.validator.ValidationRule>
+        <sparqlQuery>PREFIX dcterms: &lt;http://purl.org/dc/terms/&gt;
+            PREFIX dcat:&lt;http://www.w3.org/ns/dcat#&gt;
+            SELECT
+            ?s ?p ?o
+            WHERE {
+            ?s a dcat:Distribution.
+            ?s dcat:downloadURL ?o.
+            FILTER(!isURI(?o))
+            BIND(dcat:downloadURL AS ?p).
+            }
+        </sparqlQuery>
+        <description>dcat:downloadURL should be a resource</description>
+        <message>dcat:downloadURL should be a resource</message>
+        <severity>error</severity>
+    </com.tenforce.lodms.transformers.validator.ValidationRule>
+    <com.tenforce.lodms.transformers.validator.ValidationRule>
+        <sparqlQuery>PREFIX dcterms: &lt;http://purl.org/dc/terms/&gt;
+            PREFIX dcat:&lt;http://www.w3.org/ns/dcat#&gt;
+            SELECT
+            ?s ?p ?o
+            WHERE {
+            ?s a dcat:Distribution.
+            ?s dcat:mediaType ?o.
+            FILTER(!isURI(?o))
+            BIND(dcat:mediaType AS ?p).
+            }
+        </sparqlQuery>
+        <description>dcat:mediaType should be a resource</description>
+        <message>dcat:mediaType should be a resource</message>
+        <severity>error</severity>
+    </com.tenforce.lodms.transformers.validator.ValidationRule>
+    <com.tenforce.lodms.transformers.validator.ValidationRule>
+        <sparqlQuery>PREFIX dcterms: &lt;http://purl.org/dc/terms/&gt;
+            PREFIX dcat:&lt;http://www.w3.org/ns/dcat#&gt;
+            SELECT
+            ?s ?p ?o
+            WHERE {
+            ?s a dcat:Distribution.
+            ?s dcterms:issued ?o.
+            FILTER(!isLiteral(?o)).
+            BIND(dcterms:issued AS ?p).
+            }
+        </sparqlQuery>
+        <description>dcterms:issued should be literal</description>
+        <message>dcterms:issued should be literal</message>
+        <severity>error</severity>
+    </com.tenforce.lodms.transformers.validator.ValidationRule>
+    <com.tenforce.lodms.transformers.validator.ValidationRule>
+        <sparqlQuery>PREFIX dcterms: &lt;http://purl.org/dc/terms/&gt;
+            PREFIX dcat:&lt;http://www.w3.org/ns/dcat#&gt;
+            SELECT
+            ?s ?p ?o
+            WHERE {
+            ?s a dcat:Distribution.
+            ?s dcterms:rights ?o.
+            FILTER(!isURI(?o)).
+            BIND(dcterms:rights AS ?p).
+            }
+        </sparqlQuery>
+        <description>dcterms:rights should be a resource</description>
+        <message>dcterms:rights should be a resource</message>
+        <severity>error</severity>
+    </com.tenforce.lodms.transformers.validator.ValidationRule>
+    <com.tenforce.lodms.transformers.validator.ValidationRule>
+        <sparqlQuery>PREFIX dcterms: &lt;http://purl.org/dc/terms/&gt;
+            PREFIX dcat:&lt;http://www.w3.org/ns/dcat#&gt;
+            PREFIX adms:&lt;http://www.w3.org/ns/adms#&gt;
+            SELECT
+            ?s ?p ?o
+            WHERE {
+            ?s a dcat:Dataset.
+            ?s adms:status ?o.
+            FILTER(!isUri(?o)).
+            BIND(adms:status AS ?p).
+            }
+        </sparqlQuery>
+        <description>adms:status should be a resource</description>
+        <message>adms:status should be a resource</message>
+        <severity>error</severity>
+    </com.tenforce.lodms.transformers.validator.ValidationRule>
+    <com.tenforce.lodms.transformers.validator.ValidationRule>
+        <sparqlQuery>PREFIX dcterms: &lt;http://purl.org/dc/terms/&gt;
+            PREFIX dcat:&lt;http://www.w3.org/ns/dcat#&gt;
+            SELECT
+            ?s ?p ?o
+            WHERE {
+            ?s a dcat:Distribution.
+            ?s dcterms:title ?o.
+            FILTER(!isLiteral(?o))
+            BIND(dcterms:title AS ?p).
+            }
+        </sparqlQuery>
+        <description>dcterms:title should be a literal</description>
+        <message>dcterms:title should be a literal</message>
+        <severity>error</severity>
+    </com.tenforce.lodms.transformers.validator.ValidationRule>
+    <com.tenforce.lodms.transformers.validator.ValidationRule>
+        <sparqlQuery>PREFIX dcterms: &lt;http://purl.org/dc/terms/&gt;
+            PREFIX dcat:&lt;http://www.w3.org/ns/dcat#&gt;
+            SELECT
+            ?s ?p ?o
+            WHERE {
+            ?s a dcat:Distribution.
+            ?s dcterms:modified ?o.
+            FILTER(!isLiteral(?o)).
+            BIND(dcterms:modified AS ?p).
+            }
+        </sparqlQuery>
+        <description>dcterms:modified should be a literal</description>
+        <message>dcterms:modified should be a literal</message>
+        <severity>error</severity>
+    </com.tenforce.lodms.transformers.validator.ValidationRule>
+    <com.tenforce.lodms.transformers.validator.ValidationRule>
+        <sparqlQuery>PREFIX dcterms: &lt;http://purl.org/dc/terms/&gt;
+            PREFIX dcat:&lt;http://www.w3.org/ns/dcat#&gt;
+            PREFIX foaf:&lt;http://xmlns.com/foaf/0.1/&gt;
+            SELECT ?s ?p ?o
+            WHERE {
+            ?s a foaf:Agent.
+            FILTER(!EXISTS {?s foaf:name ?name}).
+            BIND (rdf:type as ?p).
+            BIND (foaf:Agent as ?o).
+            }
+        </sparqlQuery>
+        <description>name is a required property for Agent</description>
+        <message>name is a required property for Agent</message>
+        <severity>error</severity>
+    </com.tenforce.lodms.transformers.validator.ValidationRule>
+    <com.tenforce.lodms.transformers.validator.ValidationRule>
+        <sparqlQuery>PREFIX dcterms: &lt;http://purl.org/dc/terms/&gt;
+            PREFIX dcat:&lt;http://www.w3.org/ns/dcat#&gt;
+            PREFIX foaf:&lt;http://xmlns.com/foaf/0.1/&gt;
+            SELECT ?s ?p ?o
+            WHERE {
+            ?s a foaf:Agent.
+            ?s foaf:name ?o.
+            FILTER(!isLiteral(?o)).
+            BIND (foaf:name as ?p)
+            }
+        </sparqlQuery>
+        <description>foaf:name should be a literal</description>
+        <message>foaf:name should be a literal</message>
+        <severity>error</severity>
+    </com.tenforce.lodms.transformers.validator.ValidationRule>
+    <com.tenforce.lodms.transformers.validator.ValidationRule>
+        <sparqlQuery>PREFIX dcterms: &lt;http://purl.org/dc/terms/&gt;
+            PREFIX dcat:&lt;http://www.w3.org/ns/dcat#&gt;
+            PREFIX foaf:&lt;http://xmlns.com/foaf/0.1/&gt;
+            SELECT ?s ?p ?o
+            WHERE {
+            ?s a foaf:Agent.
+            FILTER(!EXISTS {?s dcterms:type ?type}).
+            BIND (rdf:type as ?p).
+            BIND (foaf:Agent as ?o).
+            }
+        </sparqlQuery>
+        <description>type is a recommended property for Agent</description>
+        <message>type is a recommended property for Agent</message>
+        <severity>warning</severity>
+    </com.tenforce.lodms.transformers.validator.ValidationRule>
+    <com.tenforce.lodms.transformers.validator.ValidationRule>
+        <sparqlQuery>PREFIX dcterms: &lt;http://purl.org/dc/terms/&gt;
+            PREFIX dcat:&lt;http://www.w3.org/ns/dcat#&gt;
+            PREFIX foaf:&lt;http://xmlns.com/foaf/0.1/&gt;
+            SELECT ?s ?p ?o
+            WHERE {
+            ?s a foaf:Agent.
+            ?s dcterms:type ?o.
+            FILTER(!isUri(?o)).
+            BIND (dcterms:type as ?p)
+            }
+        </sparqlQuery>
+        <description>type should be a resource</description>
+        <message>type should be a resource</message>
         <severity>warning</severity>
     </com.tenforce.lodms.transformers.validator.ValidationRule>
 </list>

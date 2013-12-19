@@ -7,6 +7,7 @@ import at.punkt.lodms.integration.ConfigurationException;
 import at.punkt.lodms.spi.transform.TransformContext;
 import at.punkt.lodms.spi.transform.TransformException;
 import com.tenforce.lodms.transformers.validator.ValidationExecutor;
+import com.tenforce.lodms.transformers.validator.ValidationLogWriter;
 import com.tenforce.lodms.transformers.validator.ValidationRule;
 import com.vaadin.Application;
 import com.vaadin.terminal.ClassResource;
@@ -34,12 +35,13 @@ public class OdsValidator extends TransformerBase<OdsValidatorConfig> implements
         try {
             RepositoryConnection con = repository.getConnection();
             try {
-                ValidationExecutor executor = new ValidationExecutor(con, graph, config.getLogFilePath());
-
+                ValidationLogWriter logWriter = new ValidationLogWriter(config.getLogFilePath());
+                ValidationExecutor executor = new ValidationExecutor(logWriter, con, graph);
                 for (ValidationRule v : config.getValidationRules()) {
                     executor.validate(v);
                 }
                 context.getWarnings().addAll(executor.getWarnings());
+                logWriter.finish();
             } catch (Exception e) {
                 logger.error(e.getMessage());
                 context.getWarnings().add(e.getMessage());
