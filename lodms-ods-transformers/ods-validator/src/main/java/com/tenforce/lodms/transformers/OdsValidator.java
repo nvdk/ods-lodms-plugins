@@ -41,6 +41,9 @@ public class OdsValidator extends TransformerBase<OdsValidatorConfig> implements
                     executor.validate(v);
                 }
                 context.getWarnings().addAll(executor.getWarnings());
+                for (String warning : executor.getWarnings()) {
+                    logWriter.info(warning);
+                }
                 logWriter.finish();
             } catch (Exception e) {
                 logger.error(e.getMessage());
