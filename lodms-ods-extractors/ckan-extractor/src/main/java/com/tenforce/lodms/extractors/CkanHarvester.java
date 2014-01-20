@@ -2,6 +2,9 @@ package com.tenforce.lodms.extractors;
 
 import at.punkt.lodms.spi.extract.ExtractException;
 import com.tenforce.lodms.ODSVoc;
+import com.tenforce.lodms.extractors.models.Catalog;
+import com.tenforce.lodms.extractors.models.CkanDataSetList;
+import com.tenforce.lodms.extractors.utils.MapToRdfConverter;
 import org.apache.log4j.Logger;
 import org.openrdf.model.URI;
 import org.openrdf.model.ValueFactory;
@@ -22,118 +25,110 @@ import java.util.concurrent.Executors;
 
 
 public class CkanHarvester {
-    private static final ValueFactory valueFactory = ValueFactoryImpl.getInstance();
-    protected Logger logger = Logger.getLogger(CkanHarvester.class);
+  private static final ValueFactory valueFactory = ValueFactoryImpl.getInstance();
+  protected Logger logger = Logger.getLogger(CkanHarvester.class);
 
-    private String subjectPrefix;
-    private String predicatePrefix;
-    private String apiUri;
-    private String baseUri;
-    private List<String> ignoredKeys;
-    private RDFHandler handler;
-    private boolean enableProvenance = true;
-    private String catalogOwner = "";
-    private List<String> warnings = new ArrayList<String>();
-    private String catalogTitle;
-    private String catalogDescription;
-    private String license;
+  private String subjectPrefix;
+  private String predicatePrefix;
+  private String apiUri;
+  private String baseUri;
+  private List<String> ignoredKeys;
+  private RDFHandler handler;
+  private boolean enableProvenance = true;
+  private String catalogOwner = "";
+  private List<String> warnings = new ArrayList<String>();
+  private String catalogTitle;
+  private String catalogDescription;
+  private String license;
 
-    public CkanHarvester(String baseUri, String subjectPrefix, String predicatePrefix, RDFHandler handler) {
-        this.subjectPrefix = subjectPrefix;
-        this.predicatePrefix = predicatePrefix;
-        this.handler = handler;
-        this.baseUri = baseUri;
-        apiUri = baseUri.endsWith("/") ? baseUri + "api/3/" : baseUri + "/api/3/";
+  public CkanHarvester(String baseUri, String subjectPrefix, String predicatePrefix, RDFHandler handler) {
+    this.subjectPrefix = subjectPrefix;
+    this.predicatePrefix = predicatePrefix;
+    this.handler = handler;
+    this.baseUri = baseUri;
+    apiUri = baseUri.endsWith("/") ? baseUri + "api/3/" : baseUri + "/api/3/";
+  }
+
+  public void setIgnoredKeys(List<String> ignoredKeys) {
+    this.ignoredKeys = ignoredKeys;
+  }
+
+  private void addCatalogProvenance() throws RDFHandlerException, DatatypeConfigurationException {
+    URI source = valueFactory.createURI(baseUri);
+    handler.handleStatement(new StatementImpl(source, ODSVoc.ODS_HARVEST_DATE, valueFactory.createLiteral(getXMLNow())));
+    handler.handleStatement(new StatementImpl(source, ODSVoc.RDFTYPE, ODSVoc.DCAT_CATALOG));
+
+    if (!catalogOwner.isEmpty())
+      handler.handleStatement(new StatementImpl(source, ODSVoc.DCT_PUBLISHER, valueFactory.createLiteral(catalogOwner)));
+    if (catalogDescription != null && !catalogDescription.isEmpty())
+      handler.handleStatement(new StatementImpl(source, ODSVoc.DCT_DESCRIPTION, valueFactory.createLiteral(catalogDescription)));
+    if (catalogTitle != null && !catalogTitle.isEmpty())
+      handler.handleStatement(new StatementImpl(valueFactory.createURI(baseUri), ODSVoc.DCT_TITLE, valueFactory.createLiteral(catalogTitle)));
+    if (license != null && !license.isEmpty())
+      handler.handleStatement(new StatementImpl(valueFactory.createURI(baseUri), ODSVoc.DCT_LICENSE, valueFactory.createLiteral(license)));
+  }
+
+  public void harvest() throws RDFHandlerException, ExtractException, DatatypeConfigurationException {
+    List<String> datasetIds = CkanDataSetList.getPackageIds(apiUri);
+    if (datasetIds.isEmpty())
+      throw new ExtractException("no datasets found in packageList: " + apiUri);
+
+    harvest(datasetIds);
+  }
+
+  public void harvest(List<String> datasetIds) throws RDFHandlerException, ExtractException, DatatypeConfigurationException {
+    if (datasetIds.isEmpty()) {
+      throw new ExtractException("no datasets specified");
+    }
+    if (enableProvenance)
+      addCatalogProvenance();
+
+    MapToRdfConverter converter = new MapToRdfConverter(predicatePrefix, ignoredKeys, handler);
+    ExecutorService executorService = Executors.newFixedThreadPool(5);
+    CountDownLatch barrier = new CountDownLatch(datasetIds.size());
+    Catalog catalog = new Catalog(baseUri, subjectPrefix);
+
+    try {
+      for (String datasetId : datasetIds) {
+        executorService.execute(new DataSetHarvester(catalog, converter, handler, apiUri, datasetId, barrier, warnings));
+      }
+      executorService.shutdown();
+      barrier.await();
+    } catch (Exception e) {
+      executorService.shutdownNow();
+      throw new ExtractException(e.getMessage(), e);
     }
 
-    public void setIgnoredKeys(List<String> ignoredKeys) {
-        this.ignoredKeys = ignoredKeys;
-    }
+  }
 
-    private void addCatalogProvenance() throws RDFHandlerException, DatatypeConfigurationException {
-        URI source = valueFactory.createURI(baseUri);
-        handler.handleStatement(new StatementImpl(source, ODSVoc.ODS_HARVEST_DATE, valueFactory.createLiteral(getXMLNow())));
-        handler.handleStatement(new StatementImpl(source, ODSVoc.RDFTYPE, ODSVoc.DCAT_CATALOG));
+  private static XMLGregorianCalendar getXMLNow() throws DatatypeConfigurationException {
+    GregorianCalendar gregorianCalendar = new GregorianCalendar();
+    DatatypeFactory datatypeFactory;
+    datatypeFactory = DatatypeFactory.newInstance();
+    return datatypeFactory.newXMLGregorianCalendar(gregorianCalendar);
+  }
 
-        if (!catalogOwner.isEmpty())
-            handler.handleStatement(new StatementImpl(source, ODSVoc.DCT_PUBLISHER, valueFactory.createLiteral(catalogOwner)));
-        if (catalogDescription != null && !catalogDescription.isEmpty())
-            handler.handleStatement(new StatementImpl(source, ODSVoc.DCT_DESCRIPTION, valueFactory.createLiteral(catalogDescription)));
-        if (catalogTitle != null && !catalogTitle.isEmpty())
-            handler.handleStatement(new StatementImpl(valueFactory.createURI(baseUri), ODSVoc.DCT_TITLE, valueFactory.createLiteral(catalogTitle)));
-        if (license != null && !license.isEmpty())
-            handler.handleStatement(new StatementImpl(valueFactory.createURI(baseUri), ODSVoc.DCT_LICENSE, valueFactory.createLiteral(license)));
-    }
+  public void setEnableProvenance(boolean enableProvenance) {
+    this.enableProvenance = enableProvenance;
+  }
 
-    private void addDataSetProvenance(String datasetId) throws RDFHandlerException, DatatypeConfigurationException {
-        URI source = valueFactory.createURI(baseUri);
-        URI dataset = valueFactory.createURI(subjectPrefix + datasetId);
-        handler.handleStatement(new StatementImpl(source, ODSVoc.DCAT_CAT_PROP_DATASET, dataset));
-        handler.handleStatement(new StatementImpl(dataset, ODSVoc.RDFTYPE, ODSVoc.DCAT_DATASET));
-        handler.handleStatement(new StatementImpl(dataset, ODSVoc.ODS_HARVEST_DATE, valueFactory.createLiteral(getXMLNow())));
-    }
+  public void setCatalogOwner(String catalogOwner) {
+    this.catalogOwner = catalogOwner;
+  }
 
-    public void harvest() throws RDFHandlerException, ExtractException, DatatypeConfigurationException {
-        List<String> datasetIds = CkanDataSetList.getPackageIds(apiUri);
-        if (datasetIds.isEmpty())
-            throw new ExtractException("no datasets found in packageList: " + apiUri);
+  public void setWarnings(List<String> warnings) {
+    this.warnings = warnings;
+  }
 
-        harvest(datasetIds);
-    }
+  public void setCatalogTitle(String catalogTitle) {
+    this.catalogTitle = catalogTitle;
+  }
 
-    public void harvest(List<String> datasetIds) throws RDFHandlerException, ExtractException, DatatypeConfigurationException {
-        if (datasetIds.isEmpty()) {
-            throw new ExtractException("no datasets specified");
-        }
-        if (enableProvenance)
-            addCatalogProvenance();
+  public void setCatalogDescription(String catalogDescription) {
+    this.catalogDescription = catalogDescription;
+  }
 
-
-        MapToRdfConverter converter = new MapToRdfConverter(predicatePrefix, ignoredKeys, handler);
-        ExecutorService executorService = Executors.newFixedThreadPool(5);
-        CountDownLatch barrier = new CountDownLatch(datasetIds.size());
-        try {
-            for (String datasetId : datasetIds) {
-                addDataSetProvenance(datasetId);
-                executorService.execute(new DataSetHarvester(barrier,converter, apiUri, subjectPrefix, datasetId,warnings));
-            }
-            executorService.shutdown();
-            barrier.await();
-        } catch (Exception e) {
-            executorService.shutdownNow();
-            throw new ExtractException(e.getMessage(), e);
-        }
-
-    }
-
-    private static XMLGregorianCalendar getXMLNow() throws DatatypeConfigurationException {
-        GregorianCalendar gregorianCalendar = new GregorianCalendar();
-        DatatypeFactory datatypeFactory;
-        datatypeFactory = DatatypeFactory.newInstance();
-        return datatypeFactory.newXMLGregorianCalendar(gregorianCalendar);
-    }
-
-    public void setEnableProvenance(boolean enableProvenance) {
-        this.enableProvenance = enableProvenance;
-    }
-
-    public void setCatalogOwner(String catalogOwner) {
-        this.catalogOwner = catalogOwner;
-    }
-
-    public void setWarnings(List<String> warnings) {
-        this.warnings = warnings;
-    }
-
-    public void setCatalogTitle(String catalogTitle) {
-        this.catalogTitle = catalogTitle;
-    }
-
-    public void setCatalogDescription(String catalogDescription) {
-        this.catalogDescription = catalogDescription;
-    }
-
-    public void setLicense(String license) {
-        this.license = license;
-    }
+  public void setLicense(String license) {
+    this.license = license;
+  }
 }
