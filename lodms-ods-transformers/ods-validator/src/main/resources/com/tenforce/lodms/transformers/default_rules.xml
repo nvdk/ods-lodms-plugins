@@ -238,8 +238,8 @@
       FILTER(!isURI(?o)).
       }
     </sparqlQuery>
-    <description>dcterms:publisher has maximum cardinality of 1 for Dataset</description>
-    <message>dcterms:publisher has maximum cardinality of 1 for Dataset</message>
+    <description>dcterms:publisher should be a resource</description>
+    <message>dcterms:publisher should be a resource</message>
     <severity>error</severity>
   </com.tenforce.lodms.transformers.validator.ValidationRule>
   <com.tenforce.lodms.transformers.validator.ValidationRule>
@@ -266,7 +266,7 @@
       ?s ?p ?o
       WHERE {
       ?s a dcat:Dataset.
-      FILTER(!(EXISTS { ?s dcat:theme ?theme})).
+      FILTER(!EXISTS { ?s dcat:theme ?theme}).
       BIND(rdf:type AS ?p).
       BIND(dcat:Dataset AS ?o).
       }
