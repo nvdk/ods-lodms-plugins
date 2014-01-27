@@ -40,7 +40,7 @@ public class ValidationExecutor {
           i++;
         }
         if (i > 0)
-          warnings.add(rule.getDescription() + ": " + i + " errors");
+          warnings.add(rule.getDescription() + ": " + i + rule.getSeverity() + "s");
       } else {
         warnings.add(rule.getDescription() + " does not bind all required names ?s, ?p,?o");
       }
