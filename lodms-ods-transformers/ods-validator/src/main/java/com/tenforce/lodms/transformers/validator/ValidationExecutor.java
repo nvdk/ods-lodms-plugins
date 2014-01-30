@@ -33,20 +33,29 @@ public class ValidationExecutor {
       String queryString = String.format("define input:default-graph-uri <%s> %s", context.stringValue(), rule.getSparqlQuery());
       TupleQuery query = connection.prepareTupleQuery(QueryLanguage.SPARQL, queryString);
       TupleQueryResult result = query.evaluate();
-      if (result.getBindingNames().containsAll(Arrays.asList("s", "p", "o"))) {
-        int i = 0;
-        while (result.hasNext()) {
-          createWarning(rule.getSeverity(), rule.getMessage(), result.next());
-          i++;
-        }
-        if (i > 0)
-          warnings.add(rule.getDescription() + ": " + i + rule.getSeverity() + "s");
-      } else {
+      if (!result.getBindingNames().containsAll(Arrays.asList("s", "p", "o"))) {
         warnings.add(rule.getDescription() + " does not bind all required names ?s, ?p,?o");
+        return;
+      }
+
+      int i = 0;
+      while (result.hasNext()) {
+        createWarning(rule.getSeverity(), rule.getMessage(), result.next());
+        i++;
+      }
+      if (i > 0) {
+        addWarningSummary(i, rule.getSeverity(), rule.getDescription());
       }
     } catch (Exception e) {
       throw new TransformerException(e.getMessage(), e);
     }
+  }
+
+  private void addWarningSummary(int i, String severity, String message) {
+    String plural;
+    if (i > 1)
+      severity = severity + "s";
+    warnings.add(message + ": " + i + " " + severity);
   }
 
   public List<String> getWarnings() {
