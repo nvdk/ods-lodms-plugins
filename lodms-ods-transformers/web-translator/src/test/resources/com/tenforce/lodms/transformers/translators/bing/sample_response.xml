@@ -1,0 +1,28 @@
+<ArrayOfTranslateArrayResponse
+    xmlns="http://schemas.datacontract.org/2004/07/Microsoft.MT.Web.Service.V2"
+    xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+  <TranslateArrayResponse>
+    <From>nl</From>
+    <OriginalTextSentenceLengths
+        xmlns:a="http://schemas.microsoft.com/2003/10/Serialization/Arrays">
+      <a:int>19</a:int>
+    </OriginalTextSentenceLengths>
+    <TranslatedText>an example title</TranslatedText>
+    <TranslatedTextSentenceLengths
+        xmlns:a="http://schemas.microsoft.com/2003/10/Serialization/Arrays">
+      <a:int>16</a:int>
+    </TranslatedTextSentenceLengths>
+  </TranslateArrayResponse>
+  <TranslateArrayResponse>
+    <From>nl</From>
+    <OriginalTextSentenceLengths
+        xmlns:a="http://schemas.microsoft.com/2003/10/Serialization/Arrays">
+      <a:int>16</a:int>
+    </OriginalTextSentenceLengths>
+    <TranslatedText>another title</TranslatedText>
+    <TranslatedTextSentenceLengths
+        xmlns:a="http://schemas.microsoft.com/2003/10/Serialization/Arrays">
+      <a:int>13</a:int>
+    </TranslatedTextSentenceLengths>
+  </TranslateArrayResponse>
+</ArrayOfTranslateArrayResponse>

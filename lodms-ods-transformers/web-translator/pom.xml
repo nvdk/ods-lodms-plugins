@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.tenforce.lodms</groupId>
+  <artifactId>web-translator</artifactId>
+  <version>1.0-SNAPSHOT</version>
+
+  <properties>
+    <spring.version>3.1.2.RELEASE</spring.version>
+    <jackson.version>1.7.1</jackson.version>
+    <sesame.version>2.7.3</sesame.version>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>at.punkt.lodms</groupId>
+      <artifactId>lodms-spi</artifactId>
+      <version>1.0.1</version>
+    </dependency>
+    <dependency>
+      <groupId>at.punkt.lodms</groupId>
+      <artifactId>lodms-web-integration</artifactId>
+      <version>1.0.1</version>
+    </dependency>
+    <dependency>
+      <groupId>com.tenforce.lodms</groupId>
+      <artifactId>ods-resources</artifactId>
+      <version>1.0.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-web</artifactId>
+      <version>${spring.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.testng</groupId>
+      <artifactId>testng</artifactId>
+      <version>6.1.1</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.jackson</groupId>
+      <artifactId>jackson-mapper-asl</artifactId>
+      <version>${jackson.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <version>14.0.1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openrdf.sesame</groupId>
+      <artifactId>sesame-rio-turtle</artifactId>
+      <version>${sesame.version}</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+</project>

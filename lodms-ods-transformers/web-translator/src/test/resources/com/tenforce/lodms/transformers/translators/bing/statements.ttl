@@ -1,0 +1,4 @@
+<http://mytest/datasets/a> <http://purl.org/dc/terms/title> "te vertalen titel".
+<http://mytest/datasets/b> <http://purl.org/dc/terms/title> "titre a traduire".
+<http://mytest/datasets/c> <http://purl.org/dc/terms/title> "Názov prekladať".
+<http://mytest/datasets/c> <http://purl.org/dc/terms/title> "título de traduzir".
