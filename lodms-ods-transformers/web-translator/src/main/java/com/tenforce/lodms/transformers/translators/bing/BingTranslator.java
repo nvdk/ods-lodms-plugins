@@ -10,6 +10,7 @@ import org.openrdf.model.impl.LiteralImpl;
 import org.openrdf.model.impl.StatementImpl;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.web.client.DefaultResponseErrorHandler;
@@ -34,6 +35,7 @@ public class BingTranslator implements TranslationApi {
   // JSON http://api.microsofttranslator.com/V2/Ajax.svc/TranslateArray?
   private static final int MAX_TEXT_SIZE = 5000;
   private Logger logger = Logger.getLogger(this.getClass());
+  private static final int DEFAULT_RETRIES = 3;
 
 
   /**
@@ -70,7 +72,6 @@ public class BingTranslator implements TranslationApi {
 
     if (authenticator == null)
       authenticator = new BingAuthenticator(clientId, clientSecret);
-    String token = authenticator.getToken(API_URL);
 
     List<TranslatedStatement> translatedStatements = new ArrayList<TranslatedStatement>(statements.size());
     Iterator<Statement> iter = statements.iterator();
@@ -84,7 +85,7 @@ public class BingTranslator implements TranslationApi {
       i = i + object.stringValue().length();
       toBeTranslated.add(s);
       if (i >= MAX_TEXT_SIZE || !iter.hasNext() || currentLang != newLang) {
-        translatedStatements.addAll(getTranslationsList(toBeTranslated, token));
+        translatedStatements.addAll(getTranslationsList(toBeTranslated, DEFAULT_RETRIES));
         i = 0;
         toBeTranslated = new ArrayList<Statement>(100);
       }
@@ -99,10 +100,9 @@ public class BingTranslator implements TranslationApi {
    * Note that bing only supports one input language at a time
    *
    * @param statements
-   * @param token
    * @return
    */
-  private List<TranslatedStatement> getTranslationsList(List<Statement> statements, String token) {
+  private List<TranslatedStatement> getTranslationsList(List<Statement> statements, int retries) {
     try {
       RestTemplate restTemplate = RestFactory.getRest();
       restTemplate.setErrorHandler(new BingResponseHandler());
@@ -110,7 +110,7 @@ public class BingTranslator implements TranslationApi {
       headers.setContentType(MediaType.APPLICATION_XML);
       headers.setAccept(Arrays.asList(MediaType.APPLICATION_XML));
       headers.setAcceptCharset(Arrays.asList(Charset.forName("UTF-8")));
-      headers.set("Authorization", "Bearer " + token);
+      headers.set("Authorization", "Bearer " + authenticator.getToken(API_URL));
       TranslateArrayRequest requestBody = new TranslateArrayRequest();
       requestBody.setTexts(extractValues(statements));
       HttpEntity<TranslateArrayRequest> request = new HttpEntity<TranslateArrayRequest>(requestBody, headers);
@@ -119,6 +119,10 @@ public class BingTranslator implements TranslationApi {
     } catch (HttpStatusCodeException e) {
       logger.error(e.getStatusCode() + ": " + e.getStatusText());
       logger.error(e.getResponseBodyAsString());
+      if (e.getStatusCode().equals(HttpStatus.BAD_REQUEST) && retries > 0) {
+        authenticator.invalidateToken(API_URL);
+        return getTranslationsList(statements, --retries);
+      }
       return Collections.emptyList();
     }
   }
