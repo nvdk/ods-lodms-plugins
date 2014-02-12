@@ -27,10 +27,10 @@ public class BingTranslatorTest {
     JAXBContext jaxbContext = JAXBContext.newInstance(ArrayOfTranslateArrayResponse.class);
     Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
     ArrayOfTranslateArrayResponse response = (ArrayOfTranslateArrayResponse) jaxbUnmarshaller.unmarshal(this.getClass().getResource("sample_response.xml"));
-    Assert.assertNotNull("translate responses should not be null",response.getTranslateResponses());
-    Assert.assertEquals("should have found two translations",2,response.getTranslateResponses().size());
-    Assert.assertEquals("first translation should contain the correct translated text","an example title",response.getTranslateResponses().get(0).getTranslatedText());
-    Assert.assertEquals("first translation should contain the correct from language","nl",response.getTranslateResponses().get(0).getFrom());
+    Assert.assertNotNull("translate responses should not be null", response.getTranslateResponses());
+    Assert.assertEquals("should have found two translations", 2, response.getTranslateResponses().size());
+    Assert.assertEquals("first translation should contain the correct translated text", "an example title", response.getTranslateResponses().get(0).getTranslatedText());
+    Assert.assertEquals("first translation should contain the correct from language", "nl", response.getTranslateResponses().get(0).getFrom());
   }
 
 
@@ -40,6 +40,6 @@ public class BingTranslatorTest {
     translatorApi.setClientId("CLIENTID");
     translatorApi.setClientSecret("CLIENTSECRET");
     Model statements = Rio.parse(this.getClass().getResourceAsStream("statements.ttl"), "", RDFFormat.TURTLE);
-    translatorApi.translateStatements(statements);
+//    translatorApi.translateStatements(statements);
   }
 }

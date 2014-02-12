@@ -12,7 +12,6 @@ import com.tenforce.lodms.transformers.translators.TranslationApi;
 import com.vaadin.Application;
 import com.vaadin.terminal.ClassResource;
 import com.vaadin.terminal.Resource;
-import org.apache.log4j.Logger;
 import org.openrdf.model.Model;
 import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
@@ -32,7 +31,6 @@ import java.util.Collection;
 import java.util.List;
 
 public class WebTranslator extends TransformerBase<TranslatorConfig> implements ConfigDialogProvider<TranslatorConfig> {
-  private final Logger logger = Logger.getLogger(this.getClass());
 
   @Override
   public TranslatorConfig newDefaultConfig() {
@@ -49,7 +47,7 @@ public class WebTranslator extends TransformerBase<TranslatorConfig> implements 
       TranslationApi api = config.getProvider();
       api.setClientId(config.getProviderClientID());
       api.setClientSecret(config.getProviderClientSecret());
-      Collection<TranslatedStatement> translatedStatements = api.translateStatements(getStatementsToTranslate(repository));
+      Collection<TranslatedStatement> translatedStatements = api.translateStatements(getStatementsToTranslate(repository, graph));
       insertTranslatedStatements(repository, graph, translatedStatements);
     } catch (Exception e) {
       throw new TransformException(e);
@@ -60,6 +58,7 @@ public class WebTranslator extends TransformerBase<TranslatorConfig> implements 
     RepositoryConnection con = repository.getConnection();
     try {
       for (TranslatedStatement s : translatedStatements) {
+        con.remove(s.getOriginalStatement(), graph);
         con.add(s.getTranslatedStatement(), graph);
       }
     } finally {
@@ -67,8 +66,9 @@ public class WebTranslator extends TransformerBase<TranslatorConfig> implements 
     }
   }
 
-  private Collection<Statement> getStatementsToTranslate(Repository repository) throws RepositoryException, MalformedQueryException, QueryEvaluationException {
+  private Collection<Statement> getStatementsToTranslate(Repository repository, URI graph) throws RepositoryException, MalformedQueryException, QueryEvaluationException {
     String queryString = "SELECT ?s ?p ?o " +
+            "FROM <" + graph + "> " +
             "WHERE {" +
             queryForPredicates(config.getPredicates())
             +

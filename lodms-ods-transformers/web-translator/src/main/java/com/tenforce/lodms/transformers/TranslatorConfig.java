@@ -10,8 +10,7 @@ import java.util.List;
 
 public class TranslatorConfig {
   public static final TranslationApi DEFAULT_PROVIDER = new BingTranslator();
-  public static final List<URI> DEFAULT_PREDICATES = Arrays.asList(DCTERMS.TITLE,DCTERMS.DESCRIPTION);
-  private TranslationApi provider = DEFAULT_PROVIDER;
+  public static final List<URI> DEFAULT_PREDICATES = Arrays.asList(DCTERMS.TITLE, DCTERMS.DESCRIPTION);
   private String providerClientID = "";
   private String providerClientSecret = "";
 
@@ -26,7 +25,7 @@ public class TranslatorConfig {
   }
 
   public TranslationApi getProvider() {
-    return provider;
+    return DEFAULT_PROVIDER;
   }
 
   public String getProviderClientSecret() {

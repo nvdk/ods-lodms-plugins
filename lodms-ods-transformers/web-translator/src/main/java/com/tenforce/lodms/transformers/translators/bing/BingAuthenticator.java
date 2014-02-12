@@ -1,7 +1,6 @@
 package com.tenforce.lodms.transformers.translators.bing;
 
 import com.tenforce.lodms.transformers.utils.RestFactory;
-import org.apache.log4j.Logger;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -19,7 +18,6 @@ public class BingAuthenticator {
   private String clientSecret;
   private static final String AUTH_URL = "https://datamarket.accesscontrol.windows.net/v2/OAuth2-13/";
   private Map<String, String> tokens = new HashMap<String, String>();
-  private final Logger logger = Logger.getLogger(this.getClass());
 
   public BingAuthenticator(String clientId, String secret) {
     this.clientId = clientId;
