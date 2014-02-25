@@ -87,10 +87,10 @@ public class ODSValueMapper extends TransformerBase<ODSValueMapperConfig> implem
     String predicate = config.getMappedPredicate().getDcatProp().stringValue();
     String dcatClass = config.getMappedPredicate().getDcatClass().stringValue();
     if (originalValue.startsWith("http")) {
-      String query = "WITH <%s> INSERT { ?s <%s> [a <%s>;<%s> %s]} WHERE {?s a <%s>.  {{?s <%s> \"%s\"} UNION {?s <%s> <%s>}} }";
+      String query = "WITH <%s> INSERT { ?s <%s> [a <%s>; <%s> \"%s\"]} WHERE {?s a <%s>.  {{?s <%s> \"%s\"} UNION {?s <%s> <%s>}} }";
       return String.format(query, graph, predicate, ODSVoc.ODS_OTHER_VALUE, ODSVoc.ODS_ORIGINAL_VALUE, originalValue, dcatClass, predicate, originalValue, predicate, originalValue);
     } else {
-      String query = "WITH <%s> INSERT { ?s <%s> [a <%s>;<%s> %s]} WHERE {?s a <%s>.  {?s <%s> \"%s\" }";
+      String query = "WITH <%s> INSERT { ?s <%s> [a <%s>; <%s> \"%s\"]} WHERE {?s a <%s>. ?s <%s> \"%s\" }";
       return String.format(query, graph, predicate, ODSVoc.ODS_OTHER_VALUE, ODSVoc.ODS_ORIGINAL_VALUE, originalValue, dcatClass, predicate, originalValue);
     }
   }
