@@ -70,8 +70,7 @@ public class BingTranslator implements TranslationApi {
     if (clientId == null || clientSecret == null)
       throw new IllegalStateException("clientId and clientSecret are required to translate statements on bing");
 
-    if (authenticator == null)
-      authenticator = new BingAuthenticator(clientId, clientSecret);
+    authenticator = new BingAuthenticator(clientId, clientSecret);
 
     List<TranslatedStatement> translatedStatements = new ArrayList<TranslatedStatement>(statements.size());
     Iterator<Statement> iter = statements.iterator();

@@ -4,13 +4,16 @@ import at.punkt.lodms.integration.ConfigDialog;
 import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.data.validator.AbstractStringValidator;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.DefaultFieldFactory;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.Form;
 import com.vaadin.ui.ListSelect;
+import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import org.openrdf.model.URI;
+import org.openrdf.model.impl.URIImpl;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -38,12 +41,30 @@ public class TranslatorDialog extends VerticalLayout implements ConfigDialog {
           for (URI predicate : config.getPredicates())
             box.addItem(predicate.stringValue());
           return box;
+        } else if ("translationCache".equals("propertyId")) {
+          TextField uriField = new TextField("Translation Cache Graph");
+          uriField.setWidth(350, VerticalLayout.UNITS_PIXELS);
+          uriField.setDescription("Graph URI were translations are stored");
+          uriField.setImmediate(true);
+          uriField.addValidator(new AbstractStringValidator(null) {
+            @Override
+            protected boolean isValidString(String value) {
+              try {
+                new URIImpl(value);
+                return true;
+              } catch (Exception ex) {
+                setErrorMessage("Invalid graph URI: " + ex.getMessage());
+                return false;
+              }
+            }
+          });
+          return uriField;
         } else
           return super.createField(item, propertyId, uiContext);
       }
     });
     form.setItemDataSource(new BeanItem<TranslatorConfig>(this.config));
-    form.setVisibleItemProperties(new String[]{"providerClientID", "providerClientSecret", "predicates"});
+    form.setVisibleItemProperties(new String[]{"providerClientID", "providerClientSecret", "predicates", "translationCache"});
     addComponent(form);
   }
 
@@ -54,6 +75,7 @@ public class TranslatorDialog extends VerticalLayout implements ConfigDialog {
     config.setPredicates(selectedPred);
     config.setProviderClientID(form.getField("providerClientID").getValue().toString());
     config.setProviderClientSecret(form.getField("providerClientSecret").getValue().toString());
+    config.setTranslationCache(form.getField("translationCache").getValue().toString());
     return config;
   }
 }

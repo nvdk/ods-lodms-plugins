@@ -13,6 +13,7 @@ public class TranslatorConfig {
   public static final List<URI> DEFAULT_PREDICATES = Arrays.asList(DCTERMS.TITLE, DCTERMS.DESCRIPTION);
   private String providerClientID = "";
   private String providerClientSecret = "";
+  private String translationCache = "ods:translationCache";
 
   private List<URI> predicates = DEFAULT_PREDICATES;
 
@@ -42,5 +43,13 @@ public class TranslatorConfig {
 
   public void setProviderClientID(String providerClientID) {
     this.providerClientID = providerClientID;
+  }
+
+  public String getTranslationCache() {
+    return translationCache;
+  }
+
+  public void setTranslationCache(String translationCache) {
+    this.translationCache = translationCache;
   }
 }

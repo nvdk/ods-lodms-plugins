@@ -9,13 +9,16 @@ import at.punkt.lodms.spi.transform.TransformException;
 import com.google.common.base.Joiner;
 import com.tenforce.lodms.transformers.translators.TranslatedStatement;
 import com.tenforce.lodms.transformers.translators.TranslationApi;
+import com.tenforce.lodms.transformers.translators.TranslationCache;
 import com.vaadin.Application;
 import com.vaadin.terminal.ClassResource;
 import com.vaadin.terminal.Resource;
+import org.apache.log4j.Logger;
 import org.openrdf.model.Model;
 import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
 import org.openrdf.model.impl.LinkedHashModel;
+import org.openrdf.model.impl.URIImpl;
 import org.openrdf.query.BindingSet;
 import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.QueryEvaluationException;
@@ -31,6 +34,8 @@ import java.util.Collection;
 import java.util.List;
 
 public class WebTranslator extends TransformerBase<TranslatorConfig> implements ConfigDialogProvider<TranslatorConfig> {
+  protected Logger logger = Logger.getLogger(this.getClass());
+
 
   @Override
   public TranslatorConfig newDefaultConfig() {
@@ -47,11 +52,32 @@ public class WebTranslator extends TransformerBase<TranslatorConfig> implements 
       TranslationApi api = config.getProvider();
       api.setClientId(config.getProviderClientID());
       api.setClientSecret(config.getProviderClientSecret());
-      Collection<TranslatedStatement> translatedStatements = api.translateStatements(getStatementsToTranslate(repository, graph));
+      Collection<Statement> toBeTranslated = getStatementsToTranslate(repository, graph);
+      logger.info(toBeTranslated.size() + " candidate literals to be translated");
+      TranslationCache cache = new TranslationCache(repository, new URIImpl(config.getTranslationCache()));
+      List<TranslatedStatement> translatedStatements = buildTranslationsFromCache(toBeTranslated, cache);
+      logger.info(translatedStatements.size() + " translations generated from cache");
+      logger.info(toBeTranslated.size() + " new literals to be translated");
+      Collection<TranslatedStatement> newTranslations = api.translateStatements(toBeTranslated);
+      cache.addTranslations(newTranslations);
+      translatedStatements.addAll(newTranslations);
       insertTranslatedStatements(repository, graph, translatedStatements);
     } catch (Exception e) {
       throw new TransformException(e);
     }
+  }
+
+  private List<TranslatedStatement> buildTranslationsFromCache(Collection<Statement> toBeTranslated, TranslationCache cache) {
+    List<TranslatedStatement> translatedStatements = new ArrayList<TranslatedStatement>(toBeTranslated.size());
+    List<Statement> cachedTranslate = new ArrayList<Statement>();
+    for (Statement s : toBeTranslated) {
+      if (cache.hasTranslation(s)) {
+        translatedStatements.add(cache.translate(s));
+        cachedTranslate.add(s);
+      }
+    }
+    toBeTranslated.removeAll(cachedTranslate);
+    return translatedStatements;
   }
 
   private void insertTranslatedStatements(Repository repository, URI graph, Collection<TranslatedStatement> translatedStatements) throws RepositoryException {
