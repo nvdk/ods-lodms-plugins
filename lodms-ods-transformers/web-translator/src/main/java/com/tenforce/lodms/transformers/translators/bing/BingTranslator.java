@@ -2,6 +2,7 @@ package com.tenforce.lodms.transformers.translators.bing;
 
 import com.tenforce.lodms.transformers.translators.TranslatedStatement;
 import com.tenforce.lodms.transformers.translators.TranslationApi;
+import com.tenforce.lodms.transformers.translators.TranslationException;
 import com.tenforce.lodms.transformers.utils.RestFactory;
 import org.apache.log4j.Logger;
 import org.openrdf.model.Literal;
@@ -36,6 +37,7 @@ public class BingTranslator implements TranslationApi {
   private static final int MAX_TEXT_SIZE = 5000;
   private Logger logger = Logger.getLogger(this.getClass());
   private static final int DEFAULT_RETRIES = 3;
+  private List<String> warnings = new ArrayList<String>();
 
 
   /**
@@ -58,6 +60,11 @@ public class BingTranslator implements TranslationApi {
     clientSecret = secret;
   }
 
+  @Override
+  public List<String> getWarnings() {
+    return warnings;
+  }
+
   /**
    * Iteratively collects translations for the provided set of statements, [MAX_ARRAY_SIZE] elements at a time.
    * Make sure to set clientId & clientSecret before calling this.
@@ -66,7 +73,7 @@ public class BingTranslator implements TranslationApi {
    * @return translatedStatements a collection of translatedStatements
    */
   @Override
-  public Collection<TranslatedStatement> translateStatements(Collection<Statement> statements) {
+  public Collection<TranslatedStatement> translateStatements(Collection<Statement> statements) throws TranslationException {
     if (clientId == null || clientSecret == null)
       throw new IllegalStateException("clientId and clientSecret are required to translate statements on bing");
 
@@ -101,7 +108,7 @@ public class BingTranslator implements TranslationApi {
    * @param statements
    * @return
    */
-  private List<TranslatedStatement> getTranslationsList(List<Statement> statements, int retries) {
+  private List<TranslatedStatement> getTranslationsList(List<Statement> statements, int retries) throws TranslationException {
     try {
       RestTemplate restTemplate = RestFactory.getRest();
       restTemplate.setErrorHandler(new BingResponseHandler());
@@ -116,15 +123,23 @@ public class BingTranslator implements TranslationApi {
       ArrayOfTranslateArrayResponse responseArray = restTemplate.postForObject(TRANSLATE_ARRAY, request, ArrayOfTranslateArrayResponse.class);
       return createTranslatedStatements(statements, responseArray.getTranslateResponses(), requestBody.getTo());
     } catch (HttpStatusCodeException e) {
-      logger.error(e.getStatusCode() + ": " + e.getStatusText());
-      logger.error(e.getResponseBodyAsString());
+      if (isZeroBalance(e))
+        throw new TranslationException("bing account is out of balance");
       if (e.getStatusCode().equals(HttpStatus.BAD_REQUEST) && retries > 0) {
+        warnings.add(e.getStatusText());
+        logger.error(e.getStatusCode() + ": " + e.getStatusText());
+        logger.error(e.getResponseBodyAsString());
         authenticator.invalidateToken(API_URL);
         return getTranslationsList(statements, --retries);
       }
       return Collections.emptyList();
     }
   }
+
+  private boolean isZeroBalance(HttpStatusCodeException e) {
+    return e.getStatusCode().equals(HttpStatus.BAD_REQUEST) && e.getResponseBodyAsString().contains("zero balance");
+  }
+
 
   private List<TranslatedStatement> createTranslatedStatements(List<Statement> originalStatements, List<TranslateResponse> translations, String translatedTo) {
     if (originalStatements.size() != translations.size())

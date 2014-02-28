@@ -59,6 +59,7 @@ public class WebTranslator extends TransformerBase<TranslatorConfig> implements 
       logger.info(translatedStatements.size() + " translations generated from cache");
       logger.info(toBeTranslated.size() + " new literals to be translated");
       Collection<TranslatedStatement> newTranslations = api.translateStatements(toBeTranslated);
+      context.getWarnings().addAll(api.getWarnings());
       cache.addTranslations(newTranslations);
       translatedStatements.addAll(newTranslations);
       insertTranslatedStatements(repository, graph, translatedStatements);
@@ -67,7 +68,7 @@ public class WebTranslator extends TransformerBase<TranslatorConfig> implements 
     }
   }
 
-  private List<TranslatedStatement> buildTranslationsFromCache(Collection<Statement> toBeTranslated, TranslationCache cache) {
+  private List<TranslatedStatement> buildTranslationsFromCache(Collection<Statement> toBeTranslated, TranslationCache cache) throws RepositoryException {
     List<TranslatedStatement> translatedStatements = new ArrayList<TranslatedStatement>(toBeTranslated.size());
     List<Statement> cachedTranslate = new ArrayList<Statement>();
     for (Statement s : toBeTranslated) {

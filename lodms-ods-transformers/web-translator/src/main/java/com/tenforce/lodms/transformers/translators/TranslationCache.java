@@ -3,7 +3,6 @@ package com.tenforce.lodms.transformers.translators;
 import info.aduna.iteration.Iterations;
 import org.openrdf.model.Literal;
 import org.openrdf.model.Model;
-import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
@@ -12,6 +11,11 @@ import org.openrdf.model.impl.LiteralImpl;
 import org.openrdf.model.impl.StatementImpl;
 import org.openrdf.model.impl.URIImpl;
 import org.openrdf.model.vocabulary.RDF;
+import org.openrdf.query.MalformedQueryException;
+import org.openrdf.query.QueryEvaluationException;
+import org.openrdf.query.QueryLanguage;
+import org.openrdf.query.TupleQuery;
+import org.openrdf.query.TupleQueryResult;
 import org.openrdf.repository.Repository;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
@@ -27,17 +31,15 @@ public class TranslationCache {
   private static final URI PRED_ORIG = new URIImpl("ods:orig");
   /* predicate for translation   */
   private static final URI PRED_TRANS = new URIImpl("ods:translation");
-  Model translations;
   Repository repository;
   URI translatorCache;
 
   /**
    * @param translatorCache
    */
-  public TranslationCache(Repository repository, URI translatorCache) throws RepositoryException {
+  public TranslationCache(Repository repository, URI translatorCache) {
     this.repository = repository;
     this.translatorCache = translatorCache;
-    translations = retrieveStatements();
   }
 
   /**
@@ -45,9 +47,9 @@ public class TranslationCache {
    *
    * @param statement to be translated
    */
-  public boolean hasTranslation(Statement statement) {
+  public boolean hasTranslation(Statement statement) throws RepositoryException {
     Literal literalWithoutLang = new LiteralImpl(statement.getObject().stringValue());
-    return translations.filter(null, PRED_ORIG, literalWithoutLang).size() > 0;
+    return getConnection().hasStatement(null, PRED_ORIG, literalWithoutLang, false, translatorCache);
   }
 
   /**
@@ -57,17 +59,37 @@ public class TranslationCache {
    * @return
    */
   public TranslatedStatement translate(Statement s) {
-    TranslatedStatement translatedStatement = new TranslatedStatement();
-    translatedStatement.setOriginalStatement(s);
-    Statement newStatement = new StatementImpl(s.getSubject(), s.getPredicate(), getTranslationFor(s.getObject()));
-    translatedStatement.setTranslatedStatement(newStatement);
-    return translatedStatement;
+    try {
+      TranslatedStatement translatedStatement = new TranslatedStatement();
+      translatedStatement.setOriginalStatement(s);
+      Statement newStatement = null;
+      newStatement = new StatementImpl(s.getSubject(), s.getPredicate(), getTranslationFor(s.getObject()));
+      translatedStatement.setTranslatedStatement(newStatement);
+      return translatedStatement;
+    } catch (RepositoryException e) {
+      throw new IllegalStateException(e);
+    } catch (MalformedQueryException e) {
+      throw new IllegalStateException(e);
+    } catch (QueryEvaluationException e) {
+      throw new IllegalStateException(e);
+    }
   }
 
-  private Value getTranslationFor(Value object) {
-    Literal literalWithoutLang = new LiteralImpl(object.stringValue());
-    Resource subject = translations.filter(null, PRED_ORIG, literalWithoutLang).subjects().iterator().next();
-    return translations.filter(subject, PRED_TRANS, null).objectLiteral();
+  private Value getTranslationFor(Value object) throws RepositoryException, MalformedQueryException, QueryEvaluationException {
+    String query = "" +
+            "SELECT ?translation " +
+            "FROM <" + translatorCache + "> " +
+            "WHERE {" +
+            " ?subject <" + PRED_ORIG + "> \"" + object.stringValue() + "\". " +
+            " ?subject <" + PRED_TRANS + "> ?translation" +
+            "}";
+
+    TupleQuery tupleQuery = getConnection().prepareTupleQuery(QueryLanguage.SPARQL, query);
+    TupleQueryResult result = tupleQuery.evaluate();
+    if (result.hasNext())
+      return result.next().getValue("translation");
+    else
+      throw new IllegalArgumentException("no translation found");
   }
 
   /**
@@ -99,7 +121,6 @@ public class TranslationCache {
   }
 
   private void addTranslationToCache(Model translation) throws RepositoryException {
-    translations.addAll(translation);
     getConnection().add(translation, translatorCache);
   }
 
