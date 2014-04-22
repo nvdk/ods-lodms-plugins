@@ -84,19 +84,26 @@ public class BingTranslator implements TranslationApi {
     List<Statement> toBeTranslated = new ArrayList<Statement>(100);
     int i = 0;
     String currentLang = null;
-    while (iter.hasNext()) {
-      Statement s = iter.next();
-      Literal object = (Literal) s.getObject();
-      String newLang = object.getLanguage();
-      i = i + object.stringValue().length();
-      toBeTranslated.add(s);
-      if (i >= MAX_TEXT_SIZE || !iter.hasNext() || currentLang != newLang) {
-        translatedStatements.addAll(getTranslationsList(toBeTranslated, DEFAULT_RETRIES));
-        i = 0;
-        toBeTranslated = new ArrayList<Statement>(100);
+    try {
+      while (iter.hasNext()) {
+        Statement s = iter.next();
+        Literal object = (Literal) s.getObject();
+        String newLang = object.getLanguage();
+        int valueLength = object.stringValue().length();
+        if (valueLength > MAX_TEXT_SIZE)
+          continue;
+        i = i + valueLength;
+        toBeTranslated.add(s);
+        if (i >= MAX_TEXT_SIZE || !iter.hasNext() || currentLang != newLang) {
+          translatedStatements.addAll(getTranslationsList(toBeTranslated, DEFAULT_RETRIES));
+          i = 0;
+          toBeTranslated = new ArrayList<Statement>(100);
+        }
+        currentLang = newLang;
       }
-      currentLang = newLang;
-      i++;
+    } catch (Exception e) {
+      warnings.add(e.getMessage());
+      return translatedStatements;
     }
     return translatedStatements;
   }

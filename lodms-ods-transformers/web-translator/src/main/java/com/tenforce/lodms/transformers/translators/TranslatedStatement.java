@@ -12,6 +12,15 @@ public class TranslatedStatement {
     return originalStatement;
   }
 
+  public TranslatedStatement() {
+  }
+
+  public TranslatedStatement(Statement originalStatement, Statement translatedStatement) {
+    this.originalStatement = originalStatement;
+    this.translatedStatement = translatedStatement;
+  }
+
+
   public void setOriginalStatement(Statement originalStatement) {
     if (originalStatement.getObject() instanceof Literal) {
       this.originalStatement = originalStatement;

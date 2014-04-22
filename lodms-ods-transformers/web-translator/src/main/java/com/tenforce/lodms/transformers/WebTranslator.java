@@ -70,14 +70,11 @@ public class WebTranslator extends TransformerBase<TranslatorConfig> implements 
 
   private List<TranslatedStatement> buildTranslationsFromCache(Collection<Statement> toBeTranslated, TranslationCache cache) throws RepositoryException {
     List<TranslatedStatement> translatedStatements = new ArrayList<TranslatedStatement>(toBeTranslated.size());
-    List<Statement> cachedTranslate = new ArrayList<Statement>();
-    for (Statement s : toBeTranslated) {
-      if (cache.hasTranslation(s)) {
-        translatedStatements.add(cache.translate(s));
-        cachedTranslate.add(s);
-      }
+    List<TranslatedStatement> translationsFromCache = cache.translate(toBeTranslated);
+    translatedStatements.addAll(translationsFromCache);
+    for (TranslatedStatement s : translationsFromCache) {
+      toBeTranslated.remove(s.getOriginalStatement());
     }
-    toBeTranslated.removeAll(cachedTranslate);
     return translatedStatements;
   }
 

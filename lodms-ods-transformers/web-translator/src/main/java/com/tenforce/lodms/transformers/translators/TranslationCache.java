@@ -1,7 +1,5 @@
 package com.tenforce.lodms.transformers.translators;
 
-import info.aduna.iteration.Iterations;
-import org.openrdf.model.Literal;
 import org.openrdf.model.Model;
 import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
@@ -10,19 +8,20 @@ import org.openrdf.model.impl.LinkedHashModel;
 import org.openrdf.model.impl.LiteralImpl;
 import org.openrdf.model.impl.StatementImpl;
 import org.openrdf.model.impl.URIImpl;
-import org.openrdf.model.vocabulary.RDF;
-import org.openrdf.query.MalformedQueryException;
-import org.openrdf.query.QueryEvaluationException;
+import org.openrdf.query.BindingSet;
 import org.openrdf.query.QueryLanguage;
+import org.openrdf.query.QueryResult;
 import org.openrdf.query.TupleQuery;
-import org.openrdf.query.TupleQueryResult;
 import org.openrdf.repository.Repository;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
-import org.openrdf.repository.RepositoryResult;
 
+import javax.xml.bind.annotation.adapters.HexBinaryAdapter;
+import java.security.MessageDigest;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.UUID;
+import java.util.HashMap;
+import java.util.List;
 
 public class TranslationCache {
   /* custom RDF class for translations */
@@ -31,8 +30,10 @@ public class TranslationCache {
   private static final URI PRED_ORIG = new URIImpl("ods:orig");
   /* predicate for translation   */
   private static final URI PRED_TRANS = new URIImpl("ods:translation");
-  Repository repository;
-  URI translatorCache;
+  private Repository repository;
+  private RepositoryConnection con;
+  private URI translatorCache;
+  private static final int LOOKUP_SIZE = 200;
 
   /**
    * @param translatorCache
@@ -40,6 +41,7 @@ public class TranslationCache {
   public TranslationCache(Repository repository, URI translatorCache) {
     this.repository = repository;
     this.translatorCache = translatorCache;
+    this.con = getConnection();
   }
 
   /**
@@ -48,48 +50,90 @@ public class TranslationCache {
    * @param statement to be translated
    */
   public boolean hasTranslation(Statement statement) throws RepositoryException {
-    Literal literalWithoutLang = new LiteralImpl(statement.getObject().stringValue());
-    return getConnection().hasStatement(null, PRED_ORIG, literalWithoutLang, false, translatorCache);
+    URI uri = buildResourceURI(statement.getObject().stringValue());
+    return getConnection().hasStatement(uri, null, null, false, translatorCache);
   }
 
   /**
    * creates a translatedStatement using the translationCache
    *
-   * @param s statement to be translated
-   * @return
+   * @param originalStatements list of statements to be translated
+   * @return list of TranslatedStatements
    */
-  public TranslatedStatement translate(Statement s) {
-    try {
-      TranslatedStatement translatedStatement = new TranslatedStatement();
-      translatedStatement.setOriginalStatement(s);
-      Statement newStatement = null;
-      newStatement = new StatementImpl(s.getSubject(), s.getPredicate(), getTranslationFor(s.getObject()));
-      translatedStatement.setTranslatedStatement(newStatement);
-      return translatedStatement;
-    } catch (RepositoryException e) {
-      throw new IllegalStateException(e);
-    } catch (MalformedQueryException e) {
-      throw new IllegalStateException(e);
-    } catch (QueryEvaluationException e) {
-      throw new IllegalStateException(e);
+  public List<TranslatedStatement> translate(Collection<Statement> originalStatements) {
+    List<TranslatedStatement> translatedStatements = new ArrayList<TranslatedStatement>();
+    HashMap<URI, Model> toBeTranslated = new HashMap<URI, Model>(LOOKUP_SIZE);
+    int i = 1;
+    for (Statement s : originalStatements) {
+      smartPut(toBeTranslated, buildResourceURI(s.getObject().stringValue()), s);
+      if (i == originalStatements.size() || toBeTranslated.keySet().size() % LOOKUP_SIZE == 0) {
+        translatedStatements.addAll(loadTranslations(toBeTranslated));
+        toBeTranslated = new HashMap<URI, Model>(LOOKUP_SIZE);
+      }
+      i++;
+    }
+    return translatedStatements;
+  }
+
+  /**
+   * quick function to support multiple statements linked to one md5sum
+   *
+   * @param map
+   * @param key
+   * @param s
+   */
+  private void smartPut(HashMap<URI, Model> map, URI key, Statement s) {
+    if (map.containsKey(key))
+      map.get(key).add(s);
+    else {
+      Model m = new LinkedHashModel();
+      m.add(s);
+      map.put(key, m);
     }
   }
 
-  private Value getTranslationFor(Value object) throws RepositoryException, MalformedQueryException, QueryEvaluationException {
-    String query = "" +
-            "SELECT ?translation " +
-            "FROM <" + translatorCache + "> " +
-            "WHERE {" +
-            " ?subject <" + PRED_ORIG + "> \"" + object.stringValue() + "\". " +
-            " ?subject <" + PRED_TRANS + "> ?translation" +
-            "}";
+  private HashMap<URI, Statement> buildMd5StatementMap(Collection<Statement> originalStatements) {
+    HashMap<URI, Statement> md5StatementMap = new HashMap<URI, Statement>(originalStatements.size());
+    for (Statement s : originalStatements) {
+      Value v = s.getObject();
+      md5StatementMap.put(buildResourceURI(v.stringValue()), s);
+    }
+    return md5StatementMap;
+  }
 
-    TupleQuery tupleQuery = getConnection().prepareTupleQuery(QueryLanguage.SPARQL, query);
-    TupleQueryResult result = tupleQuery.evaluate();
-    if (result.hasNext())
-      return result.next().getValue("translation");
-    else
-      throw new IllegalArgumentException("no translation found");
+
+  /**
+   * @param md5StatementMap
+   * @return
+   */
+  private List<TranslatedStatement> loadTranslations(HashMap<URI, Model> md5StatementMap) {
+
+    List<TranslatedStatement> translatedStatements = new ArrayList<TranslatedStatement>();
+    String queryString = "SELECT ?uri ?translation \n" +
+            "FROM <" + translatorCache + "> \n" +
+            " WHERE \n" +
+            "{ \n" +
+            "?uri ?p ?translation. \n" +
+            "VALUES ?uri { " + combineURIs(md5StatementMap.keySet(), " ") + "  } \n " +
+            "}";
+    try {
+      TupleQuery query = con.prepareTupleQuery(QueryLanguage.SPARQL, queryString);
+      QueryResult<BindingSet> result = query.evaluate();
+      while (result.hasNext()) {
+        BindingSet set = result.next();
+        URI md5Uri = (URI) set.getValue("uri");
+        Value translation = set.getValue("translation");
+        Model origStatements = md5StatementMap.get(md5Uri);
+        for (Statement origStatement : origStatements) {
+          Statement translatedStatement = new StatementImpl(origStatement.getSubject(), origStatement.getPredicate(), translation);
+          translatedStatements.add(new TranslatedStatement(origStatement, translatedStatement));
+        }
+      }
+      result.close();
+    } catch (Exception e) {
+      throw new IllegalStateException(e);
+    }
+    return translatedStatements;
   }
 
   /**
@@ -102,39 +146,93 @@ public class TranslationCache {
   public void addTranslations(Collection<TranslatedStatement> statementList) throws RepositoryException {
     Model translations = new LinkedHashModel();
     for (TranslatedStatement s : statementList) {
-      if (!hasTranslation(s.getOriginalStatement())) {
-        String orig = s.getOriginalStatement().getObject().stringValue();
-        String trans = s.getTranslatedStatement().getObject().stringValue();
-        translations.addAll(modelTranslation(orig, trans));
-      }
+      String orig = s.getOriginalStatement().getObject().stringValue();
+      String trans = s.getTranslatedStatement().getObject().stringValue();
+      translations.addAll(modelTranslation(orig, trans));
     }
-    addTranslationToCache(translations);
+    con.add(translations, translatorCache);
   }
 
+  /**
+   * prepare statement to store translation in virtuoso
+   *
+   * @param orig
+   * @param trans
+   * @return
+   */
   private Model modelTranslation(String orig, String trans) {
     Model translation = new LinkedHashModel();
-    URI translationURI = new URIImpl("ods:translation#" + UUID.randomUUID().toString());
-    translation.add(translationURI, RDF.TYPE, KLASS_TRANS);
-    translation.add(translationURI, PRED_ORIG, new LiteralImpl(orig));
-    translation.add(translationURI, PRED_TRANS, new LiteralImpl(trans, "en"));
+    translation.add(buildResourceURI(orig), PRED_TRANS, new LiteralImpl(trans, "en"));
     return translation;
   }
 
-  private void addTranslationToCache(Model translation) throws RepositoryException {
-    getConnection().add(translation, translatorCache);
+  /**
+   * creates a unique uri for a string,
+   * uses the md5hash of the string
+   *
+   * @param orig
+   * @return
+   */
+  private URI buildResourceURI(String orig) {
+    return new URIImpl("ods:translation#" + md5(orig));
   }
 
-  private Model retrieveStatements() throws RepositoryException {
-    RepositoryConnection connection = getConnection();
-    RepositoryResult<Statement> statements = connection.getStatements(null, null, null, false, translatorCache);
-    return new LinkedHashModel(Iterations.asList(statements));
+  // clean up connection
+  protected void finalize() throws Throwable {
+    super.finalize();
+    con.close();
+    repository.shutDown();
   }
 
+  // helpers
+
+  /**
+   * convenience function to work around sesame exceptions
+   *
+   * @return
+   */
   private RepositoryConnection getConnection() {
     try {
       return repository.getConnection();
     } catch (RepositoryException e) {
       throw new IllegalStateException(e);
     }
+  }
+
+  /**
+   * create a md5hash from a string
+   *
+   * @param message
+   * @return
+   */
+  private String md5(String message) {
+    try {
+      MessageDigest md5 = MessageDigest.getInstance("md5");
+      return new HexBinaryAdapter().marshal(md5.digest(message.getBytes("UTF-8"))).toLowerCase();
+    } catch (Exception e) {
+      throw new IllegalStateException(e);
+    }
+  }
+
+  /**
+   * join a collection of uris,
+   * will use sparql notation for the URIs
+   *
+   * @param uris
+   * @param glue
+   * @return
+   */
+  String combineURIs(Collection<URI> uris, String glue) {
+    if (uris.size() == 0) {
+      return "";
+    }
+    StringBuilder out = new StringBuilder();
+    int i = 0;
+    for (URI u : uris) {
+      out.append("<" + u + ">");
+      if (++i < uris.size())
+        out.append(glue);
+    }
+    return out.toString();
   }
 }

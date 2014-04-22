@@ -44,6 +44,23 @@
     <orderEntry type="library" scope="TEST" name="Maven: org.openrdf.sesame:sesame-rio-datatypes:2.7.3" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.openrdf.sesame:sesame-rio-languages:2.7.3" level="project" />
     <orderEntry type="library" name="Maven: commons-io:commons-io:2.4" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.openrdf.sesame:sesame-repository-sail:2.7.3" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.openrdf.sesame:sesame-sail-api:2.7.3" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.openrdf.sesame:sesame-queryalgebra-model:2.7.3" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.openrdf.sesame:sesame-queryparser-api:2.7.3" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.openrdf.sesame:sesame-sail-memory:2.7.3" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.openrdf.sesame:sesame-sail-inferencer:2.7.3" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.openrdf.sesame:sesame-queryparser-serql:2.7.3" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.openrdf.sesame:sesame-queryalgebra-evaluation:2.7.3" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.openrdf.sesame:sesame-repository-sparql:2.7.3" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.openrdf.sesame:sesame-http-client:2.7.3" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.openrdf.sesame:sesame-http-protocol:2.7.3" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.openrdf.sesame:sesame-rio-ntriples:2.7.3" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.openrdf.sesame:sesame-queryresultio-api:2.7.3" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: commons-httpclient:commons-httpclient:3.1" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: commons-codec:commons-codec:1.4" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.openrdf.sesame:sesame-queryparser-sparql:2.7.3" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.openrdf.sesame:sesame-queryresultio-sparqlxml:2.7.3" level="project" />
   </component>
 </module>
 

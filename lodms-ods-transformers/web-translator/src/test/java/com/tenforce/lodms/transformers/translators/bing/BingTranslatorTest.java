@@ -8,19 +8,21 @@ import org.openrdf.rio.Rio;
 import org.testng.annotations.Test;
 
 import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
+import java.util.Arrays;
 
 public class BingTranslatorTest {
 
-//  @Test
-//  public void shouldMarshalRequest() throws Exception {
-//    TranslateArrayRequest requestBody = new TranslateArrayRequest();
-//    requestBody.setTexts(Arrays.asList("test titel", "andere titel"));
-//    JAXBContext jaxbContext = JAXBContext.newInstance(TranslateArrayRequest.class);
-//    Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
-//    jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-//    jaxbMarshaller.marshal(requestBody, System.out);
-//  }
+  @Test
+  public void shouldMarshalRequest() throws Exception {
+    TranslateArrayRequest requestBody = new TranslateArrayRequest();
+    requestBody.setTexts(Arrays.asList("test titel", "andere titel"));
+    JAXBContext jaxbContext = JAXBContext.newInstance(TranslateArrayRequest.class);
+    Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
+    jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+    jaxbMarshaller.marshal(requestBody, System.out);
+  }
 
   @Test
   public void shouldUnMarshalResponse() throws Exception {
@@ -34,12 +36,12 @@ public class BingTranslatorTest {
   }
 
 
-  @Test
+  //  @Test
   public void testTranslateStatements() throws Exception {
     TranslationApi translatorApi = new BingTranslator();
     translatorApi.setClientId("CLIENTID");
     translatorApi.setClientSecret("CLIENTSECRET");
     Model statements = Rio.parse(this.getClass().getResourceAsStream("statements.ttl"), "", RDFFormat.TURTLE);
-//    translatorApi.translateStatements(statements);
+    translatorApi.translateStatements(statements);
   }
 }
