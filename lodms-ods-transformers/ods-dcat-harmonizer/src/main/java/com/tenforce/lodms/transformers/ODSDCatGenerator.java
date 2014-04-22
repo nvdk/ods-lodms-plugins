@@ -129,6 +129,8 @@ public class ODSDCatGenerator extends TransformerBase<ODSDcatGeneratorConfig> im
             " }" +
             "}";
     Update u = connection.prepareUpdate(QueryLanguage.SPARQL, query);
+    u.setBinding("catalogUri", catalogUri);
+    u.setBinding("graph", graph);
     u.execute();
   }
 
