@@ -39,7 +39,7 @@ public class Catalog {
     statements.add(record, RDF.TYPE, ODSVoc.DCAT_CATALOGRECORD);
     statements.add(record, ODSVoc.FOAF_PRIMARYTOPIC, dataset);
     statements.add(catalogUri, ODSVoc.DCAT_CAT_PROP_DATASET, dataset);
-    statements.add(catalogUri, ODSVoc.DCAT_CAT_PROP_RECORD, dataset);
+    statements.add(catalogUri, ODSVoc.DCAT_CAT_PROP_RECORD, record);
     statements.add(dataset, RDF.TYPE, ODSVoc.DCAT_DATASET);
     return statements;
   }
