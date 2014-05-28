@@ -124,6 +124,7 @@ public class ODSDCatGenerator extends TransformerBase<ODSDcatGeneratorConfig> im
             " }\n" +
             " where { " +
             " graph ?graph {\n" +
+            "   ?rawCatalogUri a <http://www.w3.org/ns/dcat#Catalog>." +
             "   ?rawCatalogUri ?p ?t. " +
             "   VALUES ?p { dcterms:publisher dcterms:description dcterms:title}" +
             " }" +
