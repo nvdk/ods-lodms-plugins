@@ -8,9 +8,10 @@ import org.apache.log4j.Logger;
 import org.openrdf.model.Statement;
 import org.openrdf.rio.RDFHandler;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
@@ -26,7 +27,7 @@ public class DataSetHarvester implements Runnable {
   private Logger logger = Logger.getLogger(DataSetHarvester.class);
 
   public DataSetHarvester(Catalog catalog, MapToRdfConverter converter, RDFHandler handler, String apiUri, String dataSetId, CountDownLatch barrier, List<String> warnings) {
-    this.apiUri = apiUri;
+    this.apiUri = apiUri + "action/package_show?id={datasetId}";
     this.dataSetId = dataSetId;
     this.converter = converter;
     this.catalog = catalog;
@@ -38,10 +39,9 @@ public class DataSetHarvester implements Runnable {
   @Override
   public void run() {
     try {
-      HashMap map = new HashMap<String, String>();
-      map.put("id", dataSetId);
-      HttpEntity<?> httpEntity = new HttpEntity<Object>(map, RestTemplateFactory.getHttpHeaders());
-      CkanDataSet dataSet = rest.postForObject(apiUri + "action/package_show", httpEntity, CkanDataSet.class);
+      HttpEntity<?> httpEntity = new HttpEntity<Object>(RestTemplateFactory.getHttpHeaders());
+      ResponseEntity<CkanDataSet> dataSetResponseEntity = rest.exchange(apiUri, HttpMethod.GET, httpEntity, CkanDataSet.class, dataSetId);
+      CkanDataSet dataSet = dataSetResponseEntity.getBody();
       if (dataSet.success) {
         converter.convert(dataSet.getResult(), catalog.generateDatasetUri(dataSetId).stringValue());
         for (Statement s : catalog.datasetProvenance(dataSetId)) {
