@@ -26,7 +26,7 @@ public class DataSetHarvester implements Runnable {
   private CountDownLatch barrier;
   private Logger logger = Logger.getLogger(DataSetHarvester.class);
 
-  public DataSetHarvester(Catalog catalog, MapToRdfConverter converter, RDFHandler handler, String apiUri, String dataSetId, CountDownLatch barrier, List<String> warnings) {
+  public DataSetHarvester(Catalog catalog, MapToRdfConverter converter, RDFHandler handler, String apiUri, String dataSetId, CountDownLatch barrier, List<String> warnings, HttpMethod httpMethod) {
     this.apiUri = apiUri + "action/package_show?id={datasetId}";
     this.dataSetId = dataSetId;
     this.converter = converter;

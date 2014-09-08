@@ -23,7 +23,7 @@ public class CkanExtractorConfigDialog extends VerticalLayout implements ConfigD
     availablePackages = new BeanItemContainer(String.class);
     form.setFormFieldFactory(new CkanExtractFieldFactory());
     form.setItemDataSource(new BeanItem<CkanExtractorConfig>(this.config));
-    form.setVisibleItemProperties(new String[]{"baseUri", "publisher", "title", "description", "license", "predicatePrefix", "subjectPrefix", "ignoredKeys", "allDatasets", "packageIds"});
+    form.setVisibleItemProperties(new String[]{"baseUri", "httpMethod", "publisher", "title", "description", "license", "predicatePrefix", "subjectPrefix", "ignoredKeys", "allDatasets", "packageIds"});
 
     final TextField uriField = (TextField) form.getField("baseUri");
     final TextField predicateField = (TextField) form.getField("predicatePrefix");
@@ -51,7 +51,7 @@ public class CkanExtractorConfigDialog extends VerticalLayout implements ConfigD
         if (Boolean.FALSE.equals(event.getProperty().getValue())) {
           String uri = (String) uriField.getValue();
           datasetSelector.setValue(null);
-          addPackageIdsToSelect(CkanDataSetList.getPackageIds(uri + "api/3/"));
+          addPackageIdsToSelect(CkanDataSetList.getPackageIds(uri + "api/3/", getConfig().getHttpMethod()));
           datasetSelector.setVisible(true);
         } else {
           datasetSelector.setVisible(false);

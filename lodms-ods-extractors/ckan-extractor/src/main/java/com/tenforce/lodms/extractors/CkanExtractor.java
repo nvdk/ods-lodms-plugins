@@ -47,7 +47,7 @@ public class CkanExtractor extends ConfigurableBase<CkanExtractorConfig> impleme
   public void extract(RDFHandler handler, ExtractContext context) throws ExtractException {
     Map map = context.getCustomData();
     map.put("ckanExtractBaseUri", baseUri);
-    CkanHarvester harvester = new CkanHarvester(baseUri, subjectPrefix, predicatePrefix, handler);
+    CkanHarvester harvester = new CkanHarvester(baseUri, subjectPrefix, predicatePrefix, handler, config.getHttpMethod());
 
     harvester.setIgnoredKeys(ignoredKeys);
     harvester.setCatalogOwner(config.getPublisher());

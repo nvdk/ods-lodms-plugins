@@ -12,6 +12,7 @@ import org.openrdf.model.impl.StatementImpl;
 import org.openrdf.model.impl.ValueFactoryImpl;
 import org.openrdf.rio.RDFHandler;
 import org.openrdf.rio.RDFHandlerException;
+import org.springframework.http.HttpMethod;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
@@ -40,12 +41,14 @@ public class CkanHarvester {
   private String catalogTitle;
   private String catalogDescription;
   private String license;
+  private HttpMethod httpMethod;
 
-  public CkanHarvester(String baseUri, String subjectPrefix, String predicatePrefix, RDFHandler handler) {
+  public CkanHarvester(String baseUri, String subjectPrefix, String predicatePrefix, RDFHandler handler, HttpMethod httpMethod) {
     this.subjectPrefix = subjectPrefix;
     this.predicatePrefix = predicatePrefix;
     this.handler = handler;
     this.baseUri = baseUri;
+    this.httpMethod = httpMethod;
     apiUri = baseUri.endsWith("/") ? baseUri + "api/3/" : baseUri + "/api/3/";
   }
 
@@ -69,7 +72,7 @@ public class CkanHarvester {
   }
 
   public void harvest() throws RDFHandlerException, ExtractException, DatatypeConfigurationException {
-    List<String> datasetIds = CkanDataSetList.getPackageIds(apiUri);
+    List<String> datasetIds = CkanDataSetList.getPackageIds(apiUri, httpMethod);
     if (datasetIds.isEmpty())
       throw new ExtractException("no datasets found in packageList: " + apiUri);
 
@@ -90,7 +93,7 @@ public class CkanHarvester {
 
     try {
       for (String datasetId : datasetIds) {
-        executorService.execute(new DataSetHarvester(catalog, converter, handler, apiUri, datasetId, barrier, warnings));
+        executorService.execute(new DataSetHarvester(catalog, converter, handler, apiUri, datasetId, barrier, warnings, httpMethod));
       }
       executorService.shutdown();
       barrier.await();

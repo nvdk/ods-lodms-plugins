@@ -24,14 +24,14 @@ public class CkanDataSetList extends JSONModel {
     this.result = result;
   }
 
-  public static List<String> getPackageIds(String uri) {
+  public static List<String> getPackageIds(String uri, HttpMethod method) {
     RestTemplate rest = RestTemplateFactory.getRestTemplate();
     Map<String, String> map = new HashMap<String, String>();
     HttpEntity<?> httpEntity = new HttpEntity<Object>(map, RestTemplateFactory.getHttpHeaders());
     try {
       // ?h is included because some ckan instances will complain no request body is present on http get if no request param is present
       // other portals disallow POST all together so this seems to be the "solution" that works on all portals (so far)
-      ResponseEntity<CkanDataSetList> dataSetList = rest.exchange(uri + "action/package_list?wtf", HttpMethod.GET, httpEntity, CkanDataSetList.class);
+      ResponseEntity<CkanDataSetList> dataSetList = rest.exchange(uri + "action/package_list?wtf", method, httpEntity, CkanDataSetList.class);
       return dataSetList.getBody().getResult();
     } catch (HttpClientErrorException ignored) {
       return Collections.emptyList();

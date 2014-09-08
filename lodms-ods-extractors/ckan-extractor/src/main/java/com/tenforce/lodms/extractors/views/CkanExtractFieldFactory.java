@@ -6,10 +6,12 @@ import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.DefaultFieldFactory;
 import com.vaadin.ui.Field;
+import com.vaadin.ui.Select;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.TwinColSelect;
 import com.vaadin.ui.VerticalLayout;
 import org.openrdf.model.impl.URIImpl;
+import org.springframework.http.HttpMethod;
 
 public class CkanExtractFieldFactory extends DefaultFieldFactory {
   @Override
@@ -35,6 +37,11 @@ public class CkanExtractFieldFactory extends DefaultFieldFactory {
       });
       return uriField;
 
+    } else if ("httpMethod".equals(propertyId)) {
+      Select selector = new Select("Http Method");
+      selector.addItem(HttpMethod.GET);
+      selector.addItem(HttpMethod.POST);
+      return selector;
     } else if ("publisher".equals(propertyId)) {
       Field field = super.createField(item, propertyId, uiContext);
       field.setDescription("The foaf:agent responsible for this catalog.");
